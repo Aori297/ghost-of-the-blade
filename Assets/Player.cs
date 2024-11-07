@@ -6,7 +6,7 @@ public class Player : MonoBehaviour
 {
     public Rigidbody2D rb;
     public float jumpHeight = 5f;
-    private bool onGround = true;
+    public bool onGround = true;
 
     private float movement;
     public float moveSpeed = 5f;
@@ -46,5 +46,13 @@ public class Player : MonoBehaviour
     void Jump()
     {
         rb.AddForce(new Vector2(0f, jumpHeight), ForceMode2D.Impulse);
+    }
+
+    private void OnCollisionEnter2D(Collision2D collision)
+    {
+        if (collision.gameObject.tag == "Ground")
+        {
+            onGround = true;
+        }
     }
 }

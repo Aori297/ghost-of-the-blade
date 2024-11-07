@@ -122,11 +122,6 @@ NavMeshSettings:
     debug:
       m_Flags: 0
   m_NavMeshData: {fileID: 0}
---- !u!50 &199227336 stripped
-Rigidbody2D:
-  m_CorrespondingSourceObject: {fileID: 7331743330797789654, guid: e200058f1702b7f4585ba906f44ee3a9, type: 3}
-  m_PrefabInstance: {fileID: 1908611456}
-  m_PrefabAsset: {fileID: 0}
 --- !u!1 &519420028
 GameObject:
   m_ObjectHideFlags: 0
@@ -476,6 +471,11 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!95 &924756306 stripped
+Animator:
+  m_CorrespondingSourceObject: {fileID: 5018079539678532777, guid: e200058f1702b7f4585ba906f44ee3a9, type: 3}
+  m_PrefabInstance: {fileID: 1908611456}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1001 &1908611456
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -525,13 +525,9 @@ PrefabInstance:
       value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 3377162661373384592, guid: e200058f1702b7f4585ba906f44ee3a9, type: 3}
-      propertyPath: rb
+      propertyPath: animator
       value: 
-      objectReference: {fileID: 199227336}
-    - target: {fileID: 3377162661373384592, guid: e200058f1702b7f4585ba906f44ee3a9, type: 3}
-      propertyPath: jumpHeight
-      value: 3
-      objectReference: {fileID: 0}
+      objectReference: {fileID: 924756306}
     - target: {fileID: 7215313955889137966, guid: e200058f1702b7f4585ba906f44ee3a9, type: 3}
       propertyPath: m_Name
       value: Player

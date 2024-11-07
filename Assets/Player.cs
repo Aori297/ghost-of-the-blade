@@ -1,9 +1,11 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Rendering;
 
 public class Player : MonoBehaviour
 {
+    public Animator animator;
     public Rigidbody2D rb;
     public float jumpHeight = 5f;
     public bool onGround = true;
@@ -35,6 +37,21 @@ public class Player : MonoBehaviour
         if (Input.GetKey(KeyCode.Space) && onGround) {
             Jump();
             onGround = false;
+            animator.SetBool("Jump", true);
+        }
+
+        if (Mathf.Abs(movement) > .1f)
+        {
+            animator.SetFloat("Sprint", 1f);
+        }
+        else if (movement < .1f)
+        {
+            animator.SetFloat("Sprint", 0f);
+        }
+
+        if(Input.GetKeyDown(KeyCode.J))
+        {
+            animator.SetTrigger("Attack");
         }
     }
 
@@ -53,6 +70,7 @@ public class Player : MonoBehaviour
         if (collision.gameObject.tag == "Ground")
         {
             onGround = true;
+            animator.SetBool("Jump", false);
         }
     }
 }

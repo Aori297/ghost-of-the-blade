@@ -39,6 +39,24 @@ TagManager:
   - 
   - 
   m_SortingLayers:
+  - name: 3
+    uniqueID: 3610457469
+    locked: 0
+  - name: 2
+    uniqueID: 1877052775
+    locked: 0
+  - name: 1
+    uniqueID: 3576655107
+    locked: 0
+  - name: Fillers
+    uniqueID: 649627885
+    locked: 0
+  - name: Water
+    uniqueID: 1313481847
+    locked: 0
   - name: Default
     uniqueID: 0
+    locked: 0
+  - name: Grass
+    uniqueID: 3016820719
     locked: 0

@@ -34,10 +34,9 @@ public class Player : MonoBehaviour
             facingRight = true;
         }
 
-        if (Input.GetKey(KeyCode.Space) && onGround) {
+        if (Input.GetKeyDown(KeyCode.Space) && onGround) {
             Jump();
             onGround = false;
-            animator.SetBool("Jump", true);
         }
 
         if (Mathf.Abs(movement) > .1f)
@@ -62,6 +61,7 @@ public class Player : MonoBehaviour
 
     void Jump()
     {
+        animator.SetTrigger("Jump");
         rb.AddForce(new Vector2(0f, jumpHeight), ForceMode2D.Impulse);
     }
 
@@ -70,7 +70,6 @@ public class Player : MonoBehaviour
         if (collision.gameObject.tag == "Ground")
         {
             onGround = true;
-            animator.SetBool("Jump", false);
         }
     }
 }

@@ -2,18 +2,23 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Rendering;
+using UnityEngine.UI;
 
 public class Player : MonoBehaviour
 {
     public Animator animator;
     public Rigidbody2D rb;
-    public float jumpHeight = 5f;
-    public bool onGround = true;
+
+    public int maxHealth = 3;
+
+    public Text health;
 
     private float movement;
     public float moveSpeed = 5f;
-    private bool facingRight = true;
+    public float jumpHeight = 5f;
 
+    private bool facingRight = true;
+    public bool onGround = true;
 
     void Start()
     {
@@ -22,6 +27,13 @@ public class Player : MonoBehaviour
 
     void Update()
     {
+        if (maxHealth <= 0)
+        {
+            Death();
+        }
+
+        health.text = maxHealth.ToString();
+
         movement = Input.GetAxis("Horizontal");
 
         if (movement < 0f && facingRight)
@@ -71,5 +83,21 @@ public class Player : MonoBehaviour
         {
             onGround = true;
         }
+    }
+
+    public void TakeDamage(int damage)
+    {
+        if (maxHealth <= 0)
+        {
+            return;
+        }
+
+        maxHealth -= damage;
+    }
+
+
+    void Death()
+    {
+        Debug.Log("Player died.");
     }
 }

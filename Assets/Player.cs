@@ -16,9 +16,14 @@ public class Player : MonoBehaviour
     private float movement;
     public float moveSpeed = 5f;
     public float jumpHeight = 5f;
-
+    public float attackRadius = 1f;
+   
     private bool facingRight = true;
     public bool onGround = true;
+    
+    public Transform attackPoint;
+    
+    public LayerMask attackLayer;
 
     void Start()
     {
@@ -63,6 +68,8 @@ public class Player : MonoBehaviour
         if(Input.GetKeyDown(KeyCode.J))
         {
             animator.SetTrigger("Attack");
+            InflictDamage(1);
+            
         }
     }
 
@@ -95,9 +102,26 @@ public class Player : MonoBehaviour
         maxHealth -= damage;
     }
 
+    public void InflictDamage(int damage)
+    {
+        Collider2D collisionInfo = Physics2D.OverlapCircle(attackPoint.position, attackRadius, attackLayer);
+
+        if (collisionInfo != null && collisionInfo.gameObject.CompareTag("Bandit"))
+        {
+            collisionInfo.gameObject.GetComponent<Bandit>().ReceiveDamage(damage);
+        }
+    }
+
 
     void Death()
     {
         Debug.Log("Player died.");
     }
+    private void OnDrawGizmosSelected()
+    {
+        if (attackPoint == null) return;
+        Gizmos.color = Color.red;
+        Gizmos.DrawWireSphere(attackPoint.position, attackRadius);
+    }
 }
+

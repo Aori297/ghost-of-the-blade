@@ -17,9 +17,11 @@ public class Player : MonoBehaviour
     public float moveSpeed = 5f;
     public float jumpHeight = 5f;
     public float attackRadius = 1f;
+    public float damage = 1f;
    
     private bool facingRight = true;
     public bool onGround = true;
+    public bool isAttacking = false;
     
     public Transform attackPoint;
     
@@ -68,8 +70,6 @@ public class Player : MonoBehaviour
         if(Input.GetKeyDown(KeyCode.J))
         {
             animator.SetTrigger("Attack");
-            InflictDamage(1);
-            
         }
     }
 
@@ -106,9 +106,21 @@ public class Player : MonoBehaviour
     {
         Collider2D collisionInfo = Physics2D.OverlapCircle(attackPoint.position, attackRadius, attackLayer);
 
-        if (collisionInfo != null && collisionInfo.gameObject.CompareTag("Bandit"))
+        if (collisionInfo != null && isAttacking==false && collisionInfo.gameObject.CompareTag("Bandit"))
         {
-            collisionInfo.gameObject.GetComponent<Bandit>().ReceiveDamage(damage);
+            collisionInfo.gameObject.GetComponent<Bandit>().ReceiveDamage(1);
+        }
+    }
+
+    public void Attack()
+    {
+        if (isAttacking == true)
+        {
+            isAttacking = false;
+        }
+        else
+        {
+            isAttacking= true;
         }
     }
 

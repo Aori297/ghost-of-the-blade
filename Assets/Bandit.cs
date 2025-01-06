@@ -91,7 +91,7 @@ public class Bandit : MonoBehaviour {
         {
             if(collisionInfo.gameObject.GetComponent<Player>() != null)
             {
-                collisionInfo.gameObject.GetComponent<Player>().TakeDamage(0);
+                collisionInfo.gameObject.GetComponent<Player>().TakeDamage(1);
             }
         }
     }

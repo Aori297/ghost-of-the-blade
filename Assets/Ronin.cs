@@ -4,8 +4,10 @@ using UnityEngine;
 
 public class Ronin : MonoBehaviour
 {
-    private bool facingLeft = false;
+    private bool facingLeft = true;
     public bool inRange = false;
+
+    public float health = 3f;
 
     public float moveSpeed = 3f;
     public float distance = 1f;
@@ -26,10 +28,10 @@ public class Ronin : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        
+
+
     }
 
-    // Update is called once per frame
     void Update()
     {
         if (Vector2.Distance(transform.position, Player.position) <= attackRange)
@@ -74,16 +76,14 @@ public class Ronin : MonoBehaviour
             if (hit == false && facingLeft)
             {
                 transform.eulerAngles = new Vector3(0, -180, 0);
-                facingLeft = true;
+                facingLeft = false;
             }
             else if (hit == false && facingLeft == false)
             {
                 transform.eulerAngles = new Vector3(0, 0, 0);
-                facingLeft = false;
+                facingLeft = true;
             }
         }
-
-
 
     }
 
@@ -95,11 +95,25 @@ public class Ronin : MonoBehaviour
         {
             if (collisionInfo.gameObject.GetComponent<Player>() != null)
             {
-                collisionInfo.gameObject.GetComponent<Player>().TakeDamage(1);
+                collisionInfo.gameObject.GetComponent<Player>().TakeDamage(0);
             }
         }
     }
 
+    public void ReceiveDamage(int damage)
+    {
+        Debug.Log(health);
+        health -= damage;
+        if (health <= 0)
+        {
+            Die();
+        }
+    }
+
+    private void Die()
+    {
+        Destroy(gameObject);
+    }
     private void OnDrawGizmosSelected()
     {
         if (checkPoint == null)

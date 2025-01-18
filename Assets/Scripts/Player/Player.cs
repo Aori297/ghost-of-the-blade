@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using TMPro;
 using UnityEngine;
 using UnityEngine.Rendering;
 using UnityEngine.UI;
@@ -8,10 +9,12 @@ public class Player : MonoBehaviour
 {
     public Animator animator;
     public Rigidbody2D rb;
+    public PlayerStamina playerStamina;
 
     public int maxHealth = 3;
 
     public Text health;
+    public TMP_Text stamina;
 
     private float movement;
     public float moveSpeed = 5f;
@@ -39,7 +42,6 @@ public class Player : MonoBehaviour
             Death();
         }
 
-        health.text = maxHealth.ToString();
 
         movement = Input.GetAxis("Horizontal");
 
@@ -70,6 +72,7 @@ public class Player : MonoBehaviour
         if(Input.GetKeyDown(KeyCode.J))
         {
             animator.SetTrigger("Attack");
+
         }
     }
 
@@ -100,10 +103,15 @@ public class Player : MonoBehaviour
         }
 
         maxHealth -= damage;
+        health.text = maxHealth.ToString();
+
     }
 
     public void InflictDamage(int damage)
     {
+        playerStamina.DepleteStamina(playerStamina.attackStamina);
+        stamina.text = playerStamina.currentStamina.ToString();
+
         Collider2D collisionInfo = Physics2D.OverlapCircle(attackPoint.position, attackRadius, attackLayer);
 
         if (collisionInfo != null && isAttacking==false && collisionInfo.gameObject.CompareTag("Bandit"))
@@ -117,6 +125,7 @@ public class Player : MonoBehaviour
         if (isAttacking == true)
         {
             isAttacking = false;
+
         }
         else
         {
@@ -128,6 +137,8 @@ public class Player : MonoBehaviour
     void Death()
     {
         Debug.Log("Player died.");
+
+        health.text = maxHealth.ToString();
     }
     private void OnDrawGizmosSelected()
     {

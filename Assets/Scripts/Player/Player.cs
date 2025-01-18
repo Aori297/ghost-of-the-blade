@@ -19,12 +19,15 @@ public class Player : MonoBehaviour
     private float movement;
     public float moveSpeed = 5f;
     public float jumpHeight = 5f;
+    public float dashDuration = 1f;
+    public float dashRange = 10f;
     public float attackRadius = 1f;
     public float damage = 1f;
    
     private bool facingRight = true;
     public bool onGround = true;
     public bool isAttacking = false;
+    public bool isDashing = false;
     
     public Transform attackPoint;
     
@@ -50,7 +53,8 @@ public class Player : MonoBehaviour
             transform.eulerAngles = new Vector3(0f, -180f, 0f);
             facingRight = false;
         }
-        else if (movement > 0f && facingRight == false){
+        else if (movement > 0f && facingRight == false)
+        {
             transform.eulerAngles = new Vector3(0f, 0f, 0f);
             facingRight = true;
         }
@@ -72,6 +76,12 @@ public class Player : MonoBehaviour
         if(Input.GetKeyDown(KeyCode.J))
         {
             animator.SetTrigger("Attack");
+
+        }
+
+        if (Input.GetKeyDown(KeyCode.LeftShift) && !isDashing)
+        {
+            StartCoroutine(Dash());
 
         }
     }
@@ -145,6 +155,31 @@ public class Player : MonoBehaviour
         if (attackPoint == null) return;
         Gizmos.color = Color.red;
         Gizmos.DrawWireSphere(attackPoint.position, attackRadius);
+    }
+
+    IEnumerator Dash()
+    {
+        if (isDashing == true) yield break;
+
+        isDashing = true;
+        animator.SetTrigger("Dash");
+
+        if (this.transform.rotation.eulerAngles.y == 0)
+        {
+            rb.AddForce(new Vector2(dashRange, 0f), ForceMode2D.Impulse);
+        }
+        else if (this.transform.rotation.eulerAngles.y == 180)
+        {   
+            rb.AddForce(new Vector2(-dashRange, 0f), ForceMode2D.Impulse);
+            
+        }
+        else
+        {
+  
+        }
+
+        yield return new WaitForSeconds(.90f);
+        isDashing = false;
     }
 }
 

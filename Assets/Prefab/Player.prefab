@@ -168,9 +168,23 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   animator: {fileID: 3857474480886746912}
   rb: {fileID: 52334373084573252}
-  jumpHeight: 10
-  onGround: 1
+  playerStamina: {fileID: 0}
+  maxHealth: 3
+  health: {fileID: 0}
+  stamina: {fileID: 0}
   moveSpeed: 7
+  jumpHeight: 10
+  dashDuration: 1
+  dashRange: 20
+  attackRadius: 1
+  damage: 1
+  onGround: 1
+  isAttacking: 0
+  isDashing: 0
+  attackPoint: {fileID: 0}
+  attackLayer:
+    serializedVersion: 2
+    m_Bits: 0
 --- !u!50 &52334373084573252
 Rigidbody2D:
   serializedVersion: 4

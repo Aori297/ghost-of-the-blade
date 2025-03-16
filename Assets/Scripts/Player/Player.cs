@@ -73,16 +73,28 @@ public class Player : MonoBehaviour
             animator.SetFloat("Sprint", 0f);
         }
 
-        if(Input.GetKeyDown(KeyCode.J))
+        if (Input.GetKeyDown(KeyCode.J))
         {
-            animator.SetTrigger("Attack");
-
+            if (playerStamina.currentStamina >= playerStamina.attackStamina)
+            {
+                animator.SetTrigger("Attack");
+            }
+            else
+            {
+                Debug.Log("Not enough stamina to attack!");
+            }
         }
 
         if (Input.GetKeyDown(KeyCode.LeftShift) && !isDashing)
         {
-            StartCoroutine(Dash());
-
+            if (playerStamina.currentStamina >= 5)
+            {
+                StartCoroutine(Dash());
+            }
+            else
+            {
+                Debug.Log("Not enough stamina to dash!");
+            }
         }
     }
 
@@ -163,6 +175,9 @@ public class Player : MonoBehaviour
 
         isDashing = true;
         animator.SetTrigger("Dash");
+
+        playerStamina.DepleteStamina(playerStamina.dashStamina); 
+        stamina.text = playerStamina.currentStamina.ToString();
 
         if (this.transform.rotation.eulerAngles.y == 0)
         {

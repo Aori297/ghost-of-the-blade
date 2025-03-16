@@ -18,7 +18,7 @@ public class PlayerStamina : MonoBehaviour
     void Start()
     {
         currentStamina = 0;
-        InvokeRepeating("RegenStamina", 0f, 1.0f);
+        InvokeRepeating("RegenStamina", 0f, 3.0f);
     }
 
     void RegenStamina()

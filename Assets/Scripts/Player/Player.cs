@@ -1,200 +1,189 @@
-using System.Collections;
-using System.Collections.Generic;
-using TMPro;
 using UnityEngine;
-using UnityEngine.Rendering;
-using UnityEngine.UI;
+using UnityEngine.InputSystem;
+using UnityEngine.SceneManagement;
+using UnityEngine.Windows;
+using System.Collections;
 
-public class Player : MonoBehaviour
+public class PlayerController : MonoBehaviour
 {
-    public Animator animator;
-    public Rigidbody2D rb;
-    public PlayerStamina playerStamina;
+    [SerializeField] private Transform groundChecker;
+    [SerializeField] private float groundCheckDistance;
+    [SerializeField] private LayerMask groundLayer;
+    [SerializeField] private Animator anim;
+    [SerializeField] private Transform attackPoint;
 
-    public int maxHealth = 3;
+    private bool isJumping;
+    private bool isMoving;
+    private bool isGrounded;
+    private bool isDashing;
+    private bool isAttacking;
 
-    public Text health;
-    public TMP_Text stamina;
+    public float jumpForce;
+    public float dashRange;
+    public float attackRadius;
 
-    private float movement;
-    public float moveSpeed = 5f;
-    public float jumpHeight = 5f;
-    public float dashDuration = 1f;
-    public float dashRange = 10f;
-    public float attackRadius = 1f;
-    public float damage = 1f;
-   
-    private bool facingRight = true;
-    public bool onGround = true;
-    public bool isAttacking = false;
-    public bool isDashing = false;
-    
-    public Transform attackPoint;
-    
-    public LayerMask attackLayer;
+    public PlayerHealthStamina playerStamina;
+    private GameInput gameInput;
+    [SerializeField] private float moveSpeed;
 
-    void Start()
+    private Rigidbody2D rb;
+
+    private void Awake()
     {
-        
+        rb = GetComponent<Rigidbody2D>();
+        if (rb == null)
+        {
+            Debug.LogError("Rigidbody2D is missing on GameObject. Please add it.");
+            return;
+        }
+
+        gameInput = GameInput.Instance;
     }
 
-    void Update()
+    private void Start()
     {
-        if (maxHealth <= 0)
+        if (gameInput == null)
         {
-            Death();
-        }
-
-
-        movement = Input.GetAxis("Horizontal");
-
-        if (movement < 0f && facingRight)
-        {
-            transform.eulerAngles = new Vector3(0f, -180f, 0f);
-            facingRight = false;
-        }
-        else if (movement > 0f && facingRight == false)
-        {
-            transform.eulerAngles = new Vector3(0f, 0f, 0f);
-            facingRight = true;
-        }
-
-        if (Input.GetKeyDown(KeyCode.Space) && onGround) {
-            Jump();
-            onGround = false;
-        }
-
-        if (Mathf.Abs(movement) > .1f)
-        {
-            animator.SetFloat("Sprint", 1f);
-        }
-        else if (movement < .1f)
-        {
-            animator.SetFloat("Sprint", 0f);
-        }
-
-        if (Input.GetKeyDown(KeyCode.J))
-        {
-            if (playerStamina.currentStamina >= playerStamina.attackStamina)
+            gameInput = GameInput.Instance;
+            if (gameInput == null)
             {
-                animator.SetTrigger("Attack");
-            }
-            else
-            {
-                Debug.Log("Not enough stamina to attack!");
+                Debug.LogError("GameInput script not found in the scene!");
+                return;
             }
         }
 
-        if (Input.GetKeyDown(KeyCode.LeftShift) && !isDashing)
-        {
-            if (playerStamina.currentStamina >= 5)
-            {
-                StartCoroutine(Dash());
-            }
-            else
-            {
-                Debug.Log("Not enough stamina to dash!");
-            }
-        }
+        // Subscribe to Interact event
+        gameInput.inputActions.PlayerInput.Interact.performed += _ => Interact();
+        gameInput.inputActions.PlayerInput.Jump.performed += _ => HandleJump();
+        gameInput.inputActions.PlayerInput.Dash.performed += _ => Dash();
+        gameInput.inputActions.PlayerInput.Attack.performed += _ => Attack();
     }
 
     private void FixedUpdate()
     {
-        transform.position += new Vector3(movement, 0f, 0f) * Time.fixedDeltaTime * moveSpeed;
+        HandleMovement();
     }
 
-    void Jump()
+    private void HandleMovement()
     {
-        animator.SetTrigger("Jump");
-        rb.AddForce(new Vector2(0f, jumpHeight), ForceMode2D.Impulse);
-    }
+        Vector3 input = gameInput.GetMovementVector();
 
-    private void OnCollisionEnter2D(Collision2D collision)
-    {
-        if (collision.gameObject.tag == "Ground")
+        if (input.magnitude > 0.01f)
         {
-            onGround = true;
-        }
-    }
+            isMoving = true;
 
-    public void TakeDamage(int damage)
-    {
-        if (maxHealth <= 0)
-        {
-            return;
-        }
+            anim.SetFloat("Sprint", input.magnitude);
 
-        maxHealth -= damage;
-        health.text = maxHealth.ToString();
+            float moveDistance = moveSpeed * Time.deltaTime;
+            transform.position += new Vector3(input.x * moveDistance, 0, 0);
 
-    }
-
-    public void InflictDamage(int damage)
-    {
-        playerStamina.DepleteStamina(playerStamina.attackStamina);
-        stamina.text = playerStamina.currentStamina.ToString();
-
-        Collider2D collisionInfo = Physics2D.OverlapCircle(attackPoint.position, attackRadius, attackLayer);
-
-        if (collisionInfo != null && isAttacking==false && collisionInfo.gameObject.CompareTag("Bandit"))
-        {
-            collisionInfo.gameObject.GetComponent<Bandit>().ReceiveDamage(1);
-        }
-    }
-
-    public void Attack()
-    {
-        if (isAttacking == true)
-        {
-            isAttacking = false;
-
+            if (input.x > 0)
+            {
+                transform.eulerAngles = new Vector3(0, 0, 0);
+            }
+            else if (input.x < 0)
+            {
+                transform.eulerAngles = new Vector3(0, 180, 0);
+            }
         }
         else
         {
-            isAttacking= true;
+            isMoving = false;
+            anim.SetFloat("Sprint", 0);
         }
     }
 
-
-    void Death()
+    public void HandleJump()
     {
-        Debug.Log("Player died.");
+        bool wasGrounded = isGrounded;
+        isGrounded = IsGrounded();
 
-        health.text = maxHealth.ToString();
+        if (isGrounded && !wasGrounded)
+        {
+            isJumping = false;
+        }
+
+        if (isGrounded)
+        {
+            anim.SetTrigger("Jump");
+            isJumping = true;
+            rb.velocity = new Vector2(rb.velocity.x, jumpForce);
+        }
     }
-    private void OnDrawGizmosSelected()
+
+    public void Dash()
     {
-        if (attackPoint == null) return;
-        Gizmos.color = Color.red;
-        Gizmos.DrawWireSphere(attackPoint.position, attackRadius);
+        Debug.Log("Dashed");
+        if (playerStamina.currentStamina >= 5)
+        {
+            StartCoroutine(DashEngage());
+        }
+        else
+        {
+            Debug.Log("Not enough stamina to dash!");
+        }
     }
-
-    IEnumerator Dash()
+    IEnumerator DashEngage()
     {
         if (isDashing == true) yield break;
 
         isDashing = true;
-        animator.SetTrigger("Dash");
+        anim.SetTrigger("Dash");
 
-        playerStamina.DepleteStamina(playerStamina.dashStamina); 
-        stamina.text = playerStamina.currentStamina.ToString();
+        playerStamina.DepleteStamina(playerStamina.dashStamina);
 
         if (this.transform.rotation.eulerAngles.y == 0)
         {
             rb.AddForce(new Vector2(dashRange, 0f), ForceMode2D.Impulse);
         }
         else if (this.transform.rotation.eulerAngles.y == 180)
-        {   
+        {
             rb.AddForce(new Vector2(-dashRange, 0f), ForceMode2D.Impulse);
-            
         }
         else
         {
-  
+
         }
 
         yield return new WaitForSeconds(.90f);
         isDashing = false;
     }
-}
+    public bool IsGrounded()
+    {
+        RaycastHit2D hit = Physics2D.Raycast(groundChecker.position, Vector2.down, groundCheckDistance, groundLayer);
+        Debug.DrawRay(groundChecker.position, Vector2.down * groundCheckDistance, Color.red);
+        return hit.collider != null;
+    }
 
+    private void Interact()
+    {
+        Debug.Log("Player interacted");
+    }
+
+    private void OnCollisionEnter2D(Collision2D collision)
+    {
+        Debug.Log("Collided with: " + collision.gameObject.name);
+    }
+
+    public void Attack()
+    {
+
+        if (isAttacking == true)
+        {
+            isAttacking = false;
+            playerStamina.DepleteStamina(playerStamina.attackStamina);
+            anim.SetTrigger("Attack");
+
+            Collider2D collisionInfo = Physics2D.OverlapCircle(attackPoint.position, attackRadius);
+
+            if (collisionInfo != null && isAttacking == false && collisionInfo.gameObject.CompareTag("Enemy"))
+            {
+                //collisionInfo.gameObject.GetComponent<>().ReceiveDamage(1);
+            }
+        }
+        else
+        {
+            isAttacking = true;
+        }
+    }
+}

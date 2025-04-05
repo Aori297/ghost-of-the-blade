@@ -3,9 +3,12 @@ using UnityEngine.InputSystem;
 using UnityEngine.SceneManagement;
 using UnityEngine.Windows;
 using System.Collections;
+using System;
 
 public class PlayerController : MonoBehaviour
 {
+    public static PlayerController Instance;
+
     [SerializeField] private Transform groundChecker;
     [SerializeField] private float groundCheckDistance;
     [SerializeField] private LayerMask groundLayer;
@@ -17,12 +20,15 @@ public class PlayerController : MonoBehaviour
     private bool isGrounded;
     private bool isDashing;
     private bool isAttacking;
+    private bool dashEnabled;
+    private bool canDoubleJump;
+    private bool doubleJumpEnabled;
 
     public float jumpForce;
     public float dashRange;
     public float attackRadius;
 
-    public PlayerHealthStamina playerStamina;
+    private PlayerHealthStamina playerHealthStamina;
     private GameInput gameInput;
     [SerializeField] private float moveSpeed;
 
@@ -30,6 +36,11 @@ public class PlayerController : MonoBehaviour
 
     private void Awake()
     {
+
+        if (Instance == null) Instance = this;
+        else Destroy(gameObject);
+
+
         rb = GetComponent<Rigidbody2D>();
         if (rb == null)
         {
@@ -42,6 +53,17 @@ public class PlayerController : MonoBehaviour
 
     private void Start()
     {
+
+        if (playerHealthStamina == null)
+        {
+            playerHealthStamina = PlayerHealthStamina.Instance;
+            if (playerHealthStamina == null)
+            {
+                Debug.LogError("playerHealthStamina script not found in the scene!");
+                return;
+            }
+        }
+
         if (gameInput == null)
         {
             gameInput = GameInput.Instance;
@@ -54,9 +76,23 @@ public class PlayerController : MonoBehaviour
 
         // Subscribe to Interact event
         gameInput.inputActions.PlayerInput.Interact.performed += _ => Interact();
-        gameInput.inputActions.PlayerInput.Jump.performed += _ => HandleJump();
+        gameInput.inputActions.PlayerInput.Jump.performed += _ => AttemptJump();
         gameInput.inputActions.PlayerInput.Dash.performed += _ => Dash();
         gameInput.inputActions.PlayerInput.Attack.performed += _ => Attack();
+    }
+
+    public void OnAbilityUnlock(int id)
+    {
+        switch (id)
+        {
+            case 0:
+                dashEnabled = true;
+                break;
+
+            case 1:
+                doubleJumpEnabled = true;
+                break;
+        }
     }
 
     private void FixedUpdate()
@@ -93,35 +129,43 @@ public class PlayerController : MonoBehaviour
         }
     }
 
-    public void HandleJump()
+    private void AttemptJump()
     {
-        bool wasGrounded = isGrounded;
         isGrounded = IsGrounded();
-
-        if (isGrounded && !wasGrounded)
-        {
-            isJumping = false;
-        }
 
         if (isGrounded)
         {
-            anim.SetTrigger("Jump");
-            isJumping = true;
-            rb.velocity = new Vector2(rb.velocity.x, jumpForce);
+            canDoubleJump = true;
+            Jump();
         }
+        else if (canDoubleJump && doubleJumpEnabled)
+        {
+            Jump();
+            canDoubleJump = false;
+        }
+    }
+
+    public void Jump()
+    {
+        rb.velocity = new Vector2(rb.velocity.x, jumpForce);
+        anim.SetTrigger("Jump");
     }
 
     public void Dash()
     {
-        Debug.Log("Dashed");
-        if (playerStamina.currentStamina >= 5)
+        if (dashEnabled && IsGrounded())
         {
-            StartCoroutine(DashEngage());
+            if (playerHealthStamina.currentStamina >= 5)
+            {
+                StartCoroutine(DashEngage());
+            }
+            else
+            {
+                Debug.Log("Not enough stamina to dash!");
+            }
+
         }
-        else
-        {
-            Debug.Log("Not enough stamina to dash!");
-        }
+        
     }
     IEnumerator DashEngage()
     {
@@ -130,7 +174,7 @@ public class PlayerController : MonoBehaviour
         isDashing = true;
         anim.SetTrigger("Dash");
 
-        playerStamina.DepleteStamina(playerStamina.dashStamina);
+        playerHealthStamina.DepleteStamina(playerHealthStamina.dashStamina);
 
         if (this.transform.rotation.eulerAngles.y == 0)
         {
@@ -171,7 +215,7 @@ public class PlayerController : MonoBehaviour
         if (isAttacking == true)
         {
             isAttacking = false;
-            playerStamina.DepleteStamina(playerStamina.attackStamina);
+            playerHealthStamina.DepleteStamina(playerHealthStamina.attackStamina);
             anim.SetTrigger("Attack");
 
             Collider2D collisionInfo = Physics2D.OverlapCircle(attackPoint.position, attackRadius);
@@ -184,6 +228,14 @@ public class PlayerController : MonoBehaviour
         else
         {
             isAttacking = true;
+        }
+    }
+
+    private void OnTriggerEnter2D(Collider2D collision)
+    {
+        if(collision.TryGetComponent<ICollectable>(out var collectable))
+        {
+            collectable.Collect();
         }
     }
 }

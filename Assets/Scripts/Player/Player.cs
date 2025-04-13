@@ -19,7 +19,7 @@ public class PlayerController : MonoBehaviour
     private bool isMoving;
     private bool isGrounded;
     private bool isDashing;
-    private bool isAttacking;
+    //private bool isAttacking;
     private bool dashEnabled;
     private bool canDoubleJump;
     private bool doubleJumpEnabled;
@@ -211,24 +211,29 @@ public class PlayerController : MonoBehaviour
 
     public void Attack()
     {
+        Debug.Log("Attacking");
+        //isAttacking = false;
+        playerHealthStamina.DepleteStamina(playerHealthStamina.attackStamina);
+        anim.SetTrigger("Attack");
 
-        if (isAttacking == true)
+        Collider2D collisionInfo = Physics2D.OverlapCircle(attackPoint.position, attackRadius);
+
+        if (collisionInfo != null && collisionInfo.gameObject.CompareTag("Enemy"))
         {
-            isAttacking = false;
-            playerHealthStamina.DepleteStamina(playerHealthStamina.attackStamina);
-            anim.SetTrigger("Attack");
-
-            Collider2D collisionInfo = Physics2D.OverlapCircle(attackPoint.position, attackRadius);
-
-            if (collisionInfo != null && isAttacking == false && collisionInfo.gameObject.CompareTag("Enemy"))
-            {
-                //collisionInfo.gameObject.GetComponent<>().ReceiveDamage(1);
-            }
+            collisionInfo.gameObject.GetComponent<Enemy>().TakeDamage(10);
         }
-        else
-        {
-            isAttacking = true;
-        }
+        //if (isAttacking == true)
+        //{
+        //  if (collisionInfo != null && isAttacking == false && collisionInfo.gameObject.CompareTag("Enemy"))
+        //{
+        //    collisionInfo.gameObject.GetComponent<Enemy>().TakeDamage(10);
+        //}
+        //}
+        //else
+        //{
+        //    Debug.Log("Not Attack");
+        //    isAttacking = true;
+        //}
     }
 
     private void OnTriggerEnter2D(Collider2D collision)

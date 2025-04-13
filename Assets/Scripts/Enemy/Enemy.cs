@@ -1,26 +1,31 @@
 using UnityEngine;
 using System.Collections;
+using UnityEngine.Events;
+using UnityEngine.Rendering;
 
 public class Enemy : MonoBehaviour
 {
-    [Header("Stats")]
     [SerializeField] private float enemyHealth;
     [SerializeField] private float enemyMoveSpeed = 2f;
     [SerializeField] private float enemyAttackSpeed = 1f;
-    [SerializeField] private float enemyAttackRange = 1f;
+    [SerializeField] private float enemyAttackRange = 5f;
     [SerializeField] private float rayDistance = 4f;
     [SerializeField] private float followTickRate = 0.05f;
 
-    [Header("References")]
     [SerializeField] private Transform attackPoint;
     [SerializeField] private Transform checkPoint;
     [SerializeField] private LayerMask playerLayer;
+    [SerializeField] private Animator anim;
 
     private bool isAttacking;
-    private bool playerDetected = false;
+    public bool playerDetected = false;
     private bool facingRight = false;
     private Coroutine followCoroutine;
     private Transform playerTransform;
+
+    public Patrolling patrolling;
+
+    public UnityEvent playerEscaped = new UnityEvent();
 
     private void Update()
     {
@@ -41,11 +46,14 @@ public class Enemy : MonoBehaviour
             if (!playerDetected)
             {
                 playerDetected = true;
+                patrolling.isPatrolling = false;
                 playerTransform = hit.collider.transform;
                 Debug.Log("Player detected by raycast");
 
                 if (followCoroutine == null)
                     followCoroutine = StartCoroutine(FollowPlayerCoroutine());
+
+
             }
         }
         else
@@ -59,8 +67,11 @@ public class Enemy : MonoBehaviour
 
     private void StopFollowing()
     {
+        Debug.Log("ma player ho, ma vagey");
+        playerEscaped.Invoke();
         playerDetected = false;
         playerTransform = null;
+        anim.SetBool("Attack", false);
 
         if (followCoroutine != null)
         {
@@ -80,15 +91,17 @@ public class Enemy : MonoBehaviour
                 Flip();
 
             float distanceToPlayer = Vector2.Distance(transform.position, playerTransform.position);
-            if (distanceToPlayer > enemyAttackRange)
+            if (distanceToPlayer > enemyAttackRange && !isAttacking)
             {
                 Vector2 targetPosition = Vector2.MoveTowards(
-                    transform.position,
-                    playerTransform.position,
-                    enemyMoveSpeed * followTickRate
+                    new Vector2(transform.position.x, 0f),
+                    new Vector2(playerTransform.position.x, 0f),
+                    enemyMoveSpeed * Time.deltaTime
                 );
-                transform.position = targetPosition;
+
+                transform.position = new Vector2(targetPosition.x, transform.position.y);
             }
+
             else
             {
                 EnemyAttack();
@@ -104,16 +117,17 @@ public class Enemy : MonoBehaviour
 
         isAttacking = true;
 
-        // anim.SetTrigger("Attack");
 
         Collider2D collisionInfo = Physics2D.OverlapCircle(attackPoint.position, enemyAttackRange, playerLayer);
         if (collisionInfo != null && collisionInfo.CompareTag("Player"))
         {
-            Debug.Log("Hit player!");
-            // collisionInfo.GetComponent<PlayerHealth>().ReceiveDamage(1);
-        }
+            StopFollowing();
+            anim.SetBool("Attack", true);
+            Debug.Log("Hit");
+            collisionInfo.GetComponent<PlayerHealthStamina>().TakeDamage(1);
 
-        StartCoroutine(ResetAttackCooldown());
+        }
+            StartCoroutine(ResetAttackCooldown());
     }
 
     private IEnumerator ResetAttackCooldown()
@@ -122,7 +136,7 @@ public class Enemy : MonoBehaviour
         isAttacking = false;
     }
 
-    private void Flip()
+    public void Flip()
     {
         facingRight = !facingRight;
         Vector3 scale = transform.localScale;
@@ -151,5 +165,11 @@ public class Enemy : MonoBehaviour
         {
             StopCoroutine(followCoroutine);
         }
+    }
+    public void TakeDamage(int damage)
+    {
+        anim.SetTrigger("Hurt");
+        isAttacking = false;
+        enemyHealth -= damage;
     }
 }

@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using TMPro;
+using UnityEditor;
 using UnityEngine;
 
 public class PlayerHealthStamina : MonoBehaviour
@@ -61,5 +62,20 @@ public class PlayerHealthStamina : MonoBehaviour
     {
         health.text = currentHealth.ToString();
         stamina.text = currentStamina.ToString();
+    }
+
+    public int damageAmount;
+    public void TakeDamage(int amount)
+    {
+        damageAmount = amount;
+        StartCoroutine(DamageDetection());
+    }
+
+    private IEnumerator DamageDetection()
+    {
+        yield return new WaitForSeconds(.5f);
+
+        currentHealth = Mathf.Min(currentHealth - damageAmount, MaxHealth);
+        OnHealthUpdate?.Invoke();
     }
 }

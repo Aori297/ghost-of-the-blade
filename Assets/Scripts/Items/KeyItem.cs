@@ -11,5 +11,4 @@ public class KeyItem : MonoBehaviour, ICollectable
         PlayerController.Instance.OnAbilityUnlock(id);
         Destroy(gameObject);
     }
-
 }

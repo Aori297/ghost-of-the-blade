@@ -19,7 +19,6 @@ public class PlayerController : MonoBehaviour
     private bool isMoving;
     private bool isGrounded;
     private bool isDashing;
-    //private bool isAttacking;
     private bool dashEnabled;
     private bool canDoubleJump;
     private bool doubleJumpEnabled;
@@ -74,7 +73,6 @@ public class PlayerController : MonoBehaviour
             }
         }
 
-        // Subscribe to Interact event
         gameInput.inputActions.PlayerInput.Interact.performed += _ => Interact();
         gameInput.inputActions.PlayerInput.Jump.performed += _ => AttemptJump();
         gameInput.inputActions.PlayerInput.Dash.performed += _ => Dash();

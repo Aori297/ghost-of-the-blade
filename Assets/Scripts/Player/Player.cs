@@ -15,6 +15,7 @@ public class PlayerController : MonoBehaviour
     [SerializeField] private Animator anim;
     [SerializeField] private Transform attackPoint;
 
+    private bool isBlocking;
     private bool isJumping;
     private bool isMoving;
     private bool isGrounded;
@@ -73,10 +74,20 @@ public class PlayerController : MonoBehaviour
             }
         }
 
+        playerHealthStamina.OnHealthUpdate += PlayerHealthStamina_OnHealthUpdate;
+
         gameInput.inputActions.PlayerInput.Interact.performed += _ => Interact();
         gameInput.inputActions.PlayerInput.Jump.performed += _ => AttemptJump();
         gameInput.inputActions.PlayerInput.Dash.performed += _ => Dash();
         gameInput.inputActions.PlayerInput.Attack.performed += _ => Attack();
+        gameInput.inputActions.PlayerInput.Block.performed += _ => SetBlockingState(true);
+        gameInput.inputActions.PlayerInput.Block.canceled += _ => SetBlockingState(false);
+
+    }
+
+    private void PlayerHealthStamina_OnHealthUpdate()
+    {
+        anim.SetTrigger("isHit");
     }
 
     public void OnAbilityUnlock(int id)
@@ -220,18 +231,6 @@ public class PlayerController : MonoBehaviour
         {
             collisionInfo.gameObject.GetComponent<Enemy>().TakeDamage(10);
         }
-        //if (isAttacking == true)
-        //{
-        //  if (collisionInfo != null && isAttacking == false && collisionInfo.gameObject.CompareTag("Enemy"))
-        //{
-        //    collisionInfo.gameObject.GetComponent<Enemy>().TakeDamage(10);
-        //}
-        //}
-        //else
-        //{
-        //    Debug.Log("Not Attack");
-        //    isAttacking = true;
-        //}
     }
 
     private void OnTriggerEnter2D(Collider2D collision)
@@ -240,5 +239,13 @@ public class PlayerController : MonoBehaviour
         {
             collectable.Collect();
         }
+    }
+
+    private void SetBlockingState(bool state)
+    {
+        isBlocking = state;
+        playerHealthStamina.isBlocking = state;
+        anim.SetBool("Block", state);
+        Debug.Log(state ? "Blocking" : "Not Blocking");
     }
 }

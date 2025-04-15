@@ -24,6 +24,8 @@ public class PlayerHealthStamina : MonoBehaviour
     public float attackStamina = 2f;
     public float dashStamina = 5f;
 
+    public bool isBlocking;
+
     private void Awake()
     {
         if (Instance == null) Instance = this;
@@ -67,13 +69,17 @@ public class PlayerHealthStamina : MonoBehaviour
     public int damageAmount;
     public void TakeDamage(int amount)
     {
-        damageAmount = amount;
-        StartCoroutine(DamageDetection());
+        if (!isBlocking)
+        {
+            damageAmount = amount;
+            StartCoroutine(DamageDetection());
+          
+        }
     }
 
     private IEnumerator DamageDetection()
     {
-        yield return new WaitForSeconds(.5f);
+        yield return new WaitForSeconds(0.75f);
 
         currentHealth = Mathf.Min(currentHealth - damageAmount, MaxHealth);
         OnHealthUpdate?.Invoke();

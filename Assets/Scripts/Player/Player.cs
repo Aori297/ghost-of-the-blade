@@ -74,8 +74,6 @@ public class PlayerController : MonoBehaviour
             }
         }
 
-        playerHealthStamina.OnHealthUpdate += PlayerHealthStamina_OnHealthUpdate;
-
         gameInput.inputActions.PlayerInput.Interact.performed += _ => Interact();
         gameInput.inputActions.PlayerInput.Jump.performed += _ => AttemptJump();
         gameInput.inputActions.PlayerInput.Dash.performed += _ => Dash();
@@ -83,11 +81,6 @@ public class PlayerController : MonoBehaviour
         gameInput.inputActions.PlayerInput.Block.performed += _ => SetBlockingState(true);
         gameInput.inputActions.PlayerInput.Block.canceled += _ => SetBlockingState(false);
 
-    }
-
-    private void PlayerHealthStamina_OnHealthUpdate()
-    {
-        anim.SetTrigger("isHit");
     }
 
     public void OnAbilityUnlock(int id)
@@ -113,7 +106,7 @@ public class PlayerController : MonoBehaviour
     {
         Vector3 input = gameInput.GetMovementVector();
 
-        if (input.magnitude > 0.01f)
+        if (input.magnitude > 0.01f && !isBlocking)
         {
             isMoving = true;
 
@@ -142,7 +135,7 @@ public class PlayerController : MonoBehaviour
     {
         isGrounded = IsGrounded();
 
-        if (isGrounded)
+        if (isGrounded && !isBlocking)
         {
             canDoubleJump = true;
             Jump();
@@ -243,9 +236,12 @@ public class PlayerController : MonoBehaviour
 
     private void SetBlockingState(bool state)
     {
-        isBlocking = state;
-        playerHealthStamina.isBlocking = state;
-        anim.SetBool("Block", state);
-        Debug.Log(state ? "Blocking" : "Not Blocking");
+        if (!isMoving)
+        {
+            isBlocking = state;
+            playerHealthStamina.isBlocking = state;
+            anim.SetBool("Block", state);
+            Debug.Log(state ? "Blocking" : "Not Blocking");
+        }
     }
 }

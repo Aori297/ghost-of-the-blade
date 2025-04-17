@@ -24,6 +24,9 @@ public class Enemy : MonoBehaviour
     private Transform playerTransform;
 
     public Patrolling patrolling;
+    [SerializeField] private float waitSeconds;
+    [SerializeField] private int enemyDamage;
+
 
     public UnityEvent playerEscaped = new UnityEvent();
 
@@ -124,7 +127,7 @@ public class Enemy : MonoBehaviour
             StopFollowing();
             anim.SetBool("Attack", true);
             Debug.Log("Hit");
-            collisionInfo.GetComponent<PlayerHealthStamina>().TakeDamage(1);
+            collisionInfo.GetComponent<PlayerHealthStamina>().TakeDamage(enemyDamage, waitSeconds);
 
         }
             StartCoroutine(ResetAttackCooldown());

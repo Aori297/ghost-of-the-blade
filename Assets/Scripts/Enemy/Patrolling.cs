@@ -32,12 +32,9 @@ public class Patrolling : MonoBehaviour
 
     private void Patrol()
     {
-        // Move
         transform.Translate(Vector2.left * moveSpeed * Time.deltaTime * (movingLeft ? 1 : -1));
 
-        // Check for ground ahead
         bool groundDetected = Physics2D.Raycast(groundCheck.position, Vector2.down, checkDistance, groundLayer);
-        // Check for wall ahead
         bool wallDetected = Physics2D.Raycast(wallCheck.position, Vector2.left * (movingLeft ? 1 : -1), checkDistance, groundLayer);
 
         if (!groundDetected || wallDetected)

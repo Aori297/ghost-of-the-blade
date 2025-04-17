@@ -15,7 +15,7 @@ MonoBehaviour:
   dialogueBranches:
   - dialogueLines:
     - "Hello, Test Dialogue 1\t"
-    - Trallalero Tralala
+    - U E E A E
     choices:
     - choiceText: Yes
       nextBranchIndex: 1
@@ -30,7 +30,7 @@ MonoBehaviour:
     npcImage: {fileID: 0}
     npcName: 
   - dialogueLines:
-    - This is dialogue 2
+    - "LONG SENTENCE TESTETESTETWEOITLADKFJLASKDJASLK\n KALHDKLA "
     - 'Works
 
 '

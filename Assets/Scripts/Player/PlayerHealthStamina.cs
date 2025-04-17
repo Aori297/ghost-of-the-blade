@@ -1,22 +1,20 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Threading;
 using TMPro;
 using UnityEditor;
 using UnityEngine;
-
+using UnityEngine.UI;
 public class PlayerHealthStamina : MonoBehaviour
 {
     public static PlayerHealthStamina Instance;
 
-    // Health
     public float MaxHealth = 100f;
     public float currentHealth;
     public TextMeshProUGUI health;
     public event Action OnHealthUpdate;
 
-
-    // Stamina
     [SerializeField] private float MaxStamina = 100f;
     [SerializeField] private float StaminaRegenRate = 6f;
     public TextMeshProUGUI stamina;
@@ -25,6 +23,7 @@ public class PlayerHealthStamina : MonoBehaviour
     public float dashStamina = 5f;
 
     public bool isBlocking;
+    [SerializeField] SpriteRenderer playerSprite;
 
     private void Awake()
     {
@@ -67,21 +66,48 @@ public class PlayerHealthStamina : MonoBehaviour
     }
 
     public int damageAmount;
-    public void TakeDamage(int amount)
+    public void TakeDamage(int amount, float waitSeconds)
     {
         if (!isBlocking)
         {
             damageAmount = amount;
-            StartCoroutine(DamageDetection());
+            StartCoroutine(DamageDetection(waitSeconds));
           
         }
     }
 
-    private IEnumerator DamageDetection()
+    private IEnumerator DamageDetection(float waitSeconds)
     {
-        yield return new WaitForSeconds(0.75f);
+        yield return new WaitForSeconds(waitSeconds);
 
         currentHealth = Mathf.Min(currentHealth - damageAmount, MaxHealth);
         OnHealthUpdate?.Invoke();
+
+        float duration = 1f;
+        float time = 0f;
+
+        while (time < duration)
+        {
+            // t goes from 0 to 1 to 0 over 2 seconds
+            float t = Mathf.PingPong(time * (1f / duration) * 10f, 1f);
+            playerSprite.color = Color.Lerp(Color.red, Color.white, t);
+
+            time += Time.deltaTime;
+            yield return null;
+        }
+
+        // Optional: Reset color at end
+        playerSprite.color = Color.white;
+
     }
+
+    private void OnTriggerEnter2D(Collider2D collision)
+    {
+        if (collision.gameObject.CompareTag("Projectile"))
+        {
+            TakeDamage(25, 0);
+            Destroy(collision.gameObject);
+        }
+    }
+
 }

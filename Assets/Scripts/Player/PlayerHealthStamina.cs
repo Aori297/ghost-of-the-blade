@@ -88,7 +88,6 @@ public class PlayerHealthStamina : MonoBehaviour
 
         while (time < duration)
         {
-            // t goes from 0 to 1 to 0 over 2 seconds
             float t = Mathf.PingPong(time * (1f / duration) * 10f, 1f);
             playerSprite.color = Color.Lerp(Color.red, Color.white, t);
 
@@ -96,7 +95,6 @@ public class PlayerHealthStamina : MonoBehaviour
             yield return null;
         }
 
-        // Optional: Reset color at end
         playerSprite.color = Color.white;
 
     }

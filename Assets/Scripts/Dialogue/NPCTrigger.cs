@@ -3,12 +3,17 @@ using UnityEngine.InputSystem;
 
 public class NPCDialogueTrigger : MonoBehaviour
 {
+    [SerializeField] private GameObject Key;
+    private DialogueManager dialogueManager;
     public DialogueData dialogue; 
     private bool isPlayerInRange = false;
     private GameInput gameInput;
 
     private void Start()
     {
+        dialogueManager = DialogueManager.Instance;
+        dialogueManager.OnDialogueEnd += SpawnKey;
+
         gameInput = GameInput.Instance;
         if (gameInput == null)
         {
@@ -16,6 +21,14 @@ public class NPCDialogueTrigger : MonoBehaviour
         }
 
         gameInput.inputActions.PlayerInput.Interact.performed += _ => NPCConvo();
+    }
+
+    private void SpawnKey()
+    {
+       if(Key != null)
+        {
+            Key.SetActive(true);
+        }
     }
 
     void NPCConvo()

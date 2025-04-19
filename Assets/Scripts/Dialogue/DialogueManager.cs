@@ -6,6 +6,7 @@ using System.Text;
 using UnityEngine.InputSystem;
 using System.Linq;
 using System.Collections.Generic;
+using System;
 
 public class DialogueManager : MonoBehaviour
 {
@@ -43,6 +44,8 @@ public class DialogueManager : MonoBehaviour
     private DialogueData.DialogueBranch currentBranch;
 
     private Dictionary<string, bool> dialogueOutcomes = new Dictionary<string, bool>();
+
+    public event Action OnDialogueEnd;
 
     void Awake()
     {
@@ -294,6 +297,7 @@ public class DialogueManager : MonoBehaviour
 
     public void EndDialogue()
     {
+        OnDialogueEnd?.Invoke();
         ResetDialogueState();
         TogglePlayerMovement(true);
     }

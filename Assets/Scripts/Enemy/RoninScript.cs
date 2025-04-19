@@ -1,5 +1,6 @@
 using System.Collections;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class RoninScript : MonoBehaviour
 {
@@ -8,6 +9,7 @@ public class RoninScript : MonoBehaviour
     [SerializeField] private float detectionRange = 10f;
     [SerializeField] private LayerMask playerLayer;
     [SerializeField] private BoxCollider2D bossArenaCollider;
+    [SerializeField] Slider healthBar;
 
     [Header("Movement")]
     [SerializeField] private float moveSpeed = 3f;
@@ -32,7 +34,7 @@ public class RoninScript : MonoBehaviour
 
     [Header("Health")]
     [SerializeField] private int maxHealth = 200;
-    private int currentHealth;
+    [SerializeField] private int currentHealth;
 
     private readonly string ANIM_IDLE = "Ronin_Idle";
     private readonly string ANIM_WALK = "Follow";
@@ -68,22 +70,19 @@ public class RoninScript : MonoBehaviour
         {
             if (playerTransform != null && bossArenaCollider.bounds.Contains(playerTransform.position))
             {
-                Debug.Log("B");
 
                 ActivateBoss();
-            }
-            if (!bossArenaCollider.bounds.Contains(playerTransform.position))
-            {
-                Debug.Log("bhetnea");
             }
         }
 
         if (playerInArena && playerTransform != null)
         {
-            Debug.Log("bhetyo");
-
             HandleBossAI();
         }
+    }
+    void UpdateUI()
+    {
+        healthBar.value = currentHealth;
     }
 
     private void ActivateBoss()
@@ -91,6 +90,7 @@ public class RoninScript : MonoBehaviour
         playerInArena = true;
         animator.SetBool(ANIM_WALK, true);
 
+        healthBar.gameObject.SetActive(true);
         // Optional: Play boss music
         // AudioManager.Instance.PlayBossMusic();
 
@@ -220,6 +220,7 @@ public class RoninScript : MonoBehaviour
         currentHealth -= damage;
 
         animator.SetTrigger(ANIM_HURT);
+        UpdateUI();
 
         if (currentHealth <= 0)
         {
@@ -238,6 +239,8 @@ public class RoninScript : MonoBehaviour
         rb.isKinematic = true;
 
         animator.SetTrigger(ANIM_DEATH);
+        healthBar.gameObject.SetActive(false);
+
 
         // Optional: Drop items or unlock abilities
         // LootManager.Instance.DropLoot(transform.position);

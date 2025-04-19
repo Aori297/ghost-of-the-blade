@@ -19,8 +19,8 @@ MonoBehaviour:
     choices:
     - choiceText: Yes
       nextBranchIndex: 1
-      hasOutcome: 0
-      outcomeKey: 
+      hasOutcome: 1
+      outcomeKey: Dash
     - choiceText: No
       nextBranchIndex: 1
       hasOutcome: 0

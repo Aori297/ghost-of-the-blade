@@ -11,7 +11,6 @@ public class DialogueManager : MonoBehaviour
 {
     public static DialogueManager Instance { get; private set; }
 
-    [Header("UI Components")]
     [SerializeField] private GameObject choicePanel;
     [SerializeField] private GameObject dialoguePanel;
     [SerializeField] private TextMeshProUGUI dialogueText;
@@ -20,14 +19,10 @@ public class DialogueManager : MonoBehaviour
     [SerializeField] private Image avatarImage;
     [SerializeField] private float textSpeed = 0.05f;
 
-    [Header("Input Settings")]
     [SerializeField] private float inputCooldown = 0.1f;
 
-    // Cached references
     private GameInput gameInput;
-    //private GameSceneManager gameSceneManager;
 
-    // Reusable StringBuilder to reduce garbage collection
     private readonly StringBuilder textBuilder = new StringBuilder(256);
 
     private string[] lines;
@@ -65,19 +60,11 @@ public class DialogueManager : MonoBehaviour
     private void Start()
     {
         gameInput = GameInput.Instance;
-        //gameSceneManager = GameSceneManager.Instance;
 
         if (gameInput == null)
         {
-            Debug.LogError("GameInput instance not found!");
             return;
         }
-
-        //if (gameSceneManager == null)
-        //{
-        //    Debug.LogError("GameSceneManager instance not found!");
-        //    return;
-        //}
 
         submitAction = gameInput.inputActions.UI.Submit;
         navigateAction = gameInput.inputActions.UI.Navigate;
@@ -87,7 +74,6 @@ public class DialogueManager : MonoBehaviour
     {
         if (dialogueData == null || dialogueData.dialogueBranches == null || dialogueData.dialogueBranches.Length == 0)
         {
-            Debug.LogError("Invalid dialogue data!");
             return;
         }
 
@@ -189,7 +175,6 @@ public class DialogueManager : MonoBehaviour
     {
         if (currentBranch.choices == null || currentBranch.choices.Length == 0)
         {
-            Debug.LogWarning("No choices available! Ending dialogue.");
             EndDialogue();
             return;
         }
@@ -238,12 +223,12 @@ public class DialogueManager : MonoBehaviour
         {
             Vector2 navigation = navigateAction.ReadValue<Vector2>();
 
-            if (navigation.y > 0.5f) // Up
+            if (navigation.y > 0.5f) 
             {
                 selectedChoice = (selectedChoice > 0) ? selectedChoice - 1 : 0;
                 UpdateChoiceColorsIfNeeded();
             }
-            else if (navigation.y < -0.5f) // Down
+            else if (navigation.y < -0.5f)
             {
                 int maxChoice = Mathf.Min(choices.Length - 1, choiceOptions.Length - 1);
                 selectedChoice = (selectedChoice < maxChoice) ? selectedChoice + 1 : maxChoice;
@@ -258,7 +243,6 @@ public class DialogueManager : MonoBehaviour
             if (selectedDialogueChoice.hasOutcome && !string.IsNullOrEmpty(selectedDialogueChoice.outcomeKey))
             {
                 dialogueOutcomes[selectedDialogueChoice.outcomeKey] = true;
-                Debug.Log($"Dialogue Outcome: {selectedDialogueChoice.outcomeKey} set to true");
             }
 
             makeChoice = false;
@@ -310,18 +294,6 @@ public class DialogueManager : MonoBehaviour
 
     public void EndDialogue()
     {
-        //if (currentBranch != null && currentBranch.triggerBattle)
-        //{
-        //    if (gameSceneManager != null)
-        //    {
-        //        gameSceneManager.SceneTransition();
-        //    }
-        //    else
-        //    {
-        //        Debug.LogWarning("GameSceneManager is null. Cannot trigger scene transition.");
-        //    }
-        //}
-
         ResetDialogueState();
         TogglePlayerMovement(true);
     }

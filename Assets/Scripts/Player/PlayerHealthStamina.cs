@@ -15,8 +15,12 @@ public class PlayerHealthStamina : MonoBehaviour
     public TextMeshProUGUI health;
     public event Action OnHealthUpdate;
 
+    public Slider healthSlider;
+    public Slider staminaSlider;
+
     [SerializeField] private float MaxStamina = 100f;
     [SerializeField] private float StaminaRegenRate = 6f;
+    [SerializeField] private float HealthRegenRate = 3f;
     public TextMeshProUGUI stamina;
     public float currentStamina;
     public float attackStamina = 2f;
@@ -35,7 +39,16 @@ public class PlayerHealthStamina : MonoBehaviour
     {
         OnHealthUpdate += UpdateUI;
         currentStamina = 0;
-        InvokeRepeating("RegenStamina", 0f, 2.0f);
+        InvokeRepeating("RegenStamina", 0f, 1.0f);
+        InvokeRepeating("RegenHealth", 0f, 2.0f);
+    }
+
+    void RegenHealth()
+    {
+        if (currentHealth >= MaxHealth) return;
+
+        this.currentHealth += HealthRegenRate;
+        UpdateUI();
     }
 
     void RegenStamina()
@@ -61,8 +74,8 @@ public class PlayerHealthStamina : MonoBehaviour
 
     void UpdateUI()
     {
-        health.text = currentHealth.ToString();
-        stamina.text = currentStamina.ToString();
+        healthSlider.value = currentHealth;
+        staminaSlider.value = currentStamina;
     }
 
     public int damageAmount;
@@ -105,6 +118,7 @@ public class PlayerHealthStamina : MonoBehaviour
         {
             TakeDamage(25, 0);
             Destroy(collision.gameObject);
+
         }
     }
 

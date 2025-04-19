@@ -5,7 +5,7 @@ using UnityEngine.Rendering;
 
 public class Enemy : MonoBehaviour
 {
-    [SerializeField] private float enemyHealth;
+    [SerializeField] private float enemyHealth=100f;
     [SerializeField] private float enemyMoveSpeed = 2f;
     [SerializeField] private float enemyAttackSpeed = 1f;
     [SerializeField] private float enemyAttackRange = 5f;
@@ -17,9 +17,12 @@ public class Enemy : MonoBehaviour
     [SerializeField] private LayerMask playerLayer;
     [SerializeField] private Animator anim;
 
-    private bool isAttacking;
+    public bool isHurt;
+    public bool isDead = false;
     public bool playerDetected = false;
+    private bool isAttacking;
     private bool facingRight = false;
+
     private Coroutine followCoroutine;
     private Transform playerTransform;
 
@@ -39,19 +42,17 @@ public class Enemy : MonoBehaviour
     {
         if (checkPoint == null) return;
 
-        // Reversed direction: look behind the facing direction
         Vector2 rayDirection = facingRight ? Vector2.right : Vector2.left;
 
         RaycastHit2D hit = Physics2D.Raycast(checkPoint.position, rayDirection, rayDistance, playerLayer);
 
-        if (hit.collider != null && hit.collider.CompareTag("Player"))
+        if (hit.collider != null && hit.collider.CompareTag("Player") && !isDead)
         {
             if (!playerDetected)
             {
                 playerDetected = true;
                 patrolling.isPatrolling = false;
                 playerTransform = hit.collider.transform;
-                Debug.Log("Player detected by raycast");
 
                 if (followCoroutine == null)
                     followCoroutine = StartCoroutine(FollowPlayerCoroutine());
@@ -70,11 +71,9 @@ public class Enemy : MonoBehaviour
 
     private void StopFollowing()
     {
-        Debug.Log("ma player ho, ma vagey");
         playerEscaped.Invoke();
         playerDetected = false;
         playerTransform = null;
-        anim.SetBool("Attack", false);
 
         if (followCoroutine != null)
         {
@@ -122,10 +121,10 @@ public class Enemy : MonoBehaviour
 
 
         Collider2D collisionInfo = Physics2D.OverlapCircle(attackPoint.position, enemyAttackRange, playerLayer);
-        if (collisionInfo != null && collisionInfo.CompareTag("Player"))
+        if (collisionInfo != null && collisionInfo.CompareTag("Player") && !isHurt && !isDead)
         {
             StopFollowing();
-            anim.SetBool("Attack", true);
+            anim.SetTrigger("Attack");
             Debug.Log("Hit");
             collisionInfo.GetComponent<PlayerHealthStamina>().TakeDamage(enemyDamage, waitSeconds);
 
@@ -172,7 +171,28 @@ public class Enemy : MonoBehaviour
     public void TakeDamage(int damage)
     {
         anim.SetTrigger("Hurt");
+        isHurt = true;
         isAttacking = false;
         enemyHealth -= damage;
+
+        Death();
+
+        Invoke("HurtReset", 0.5f);
+    }
+
+    void HurtReset()
+    {
+        isHurt = false;
+    }
+
+    void Death()
+    {
+        if (enemyHealth <= 0)
+        {
+            anim.SetTrigger("Death");
+            isDead = true;
+
+            Destroy(gameObject, 5);
+        }
     }
 }

@@ -18,9 +18,7 @@ public class Patrolling : MonoBehaviour
     {
         enemy.playerEscaped.AddListener(() =>
         {
-            isPatrolling = true;
-            Debug.Log("player vagyooo ma feri patrol garxu");
-            
+            isPatrolling = true;   
         });
      }
     private void Update()
@@ -32,15 +30,18 @@ public class Patrolling : MonoBehaviour
 
     private void Patrol()
     {
-        transform.Translate(Vector2.left * moveSpeed * Time.deltaTime * (movingLeft ? 1 : -1));
-
-        bool groundDetected = Physics2D.Raycast(groundCheck.position, Vector2.down, checkDistance, groundLayer);
-        bool wallDetected = Physics2D.Raycast(wallCheck.position, Vector2.left * (movingLeft ? 1 : -1), checkDistance, groundLayer);
-
-        if (!groundDetected || wallDetected)
+        if (!enemy.isHurt && !enemy.isDead)
         {
-            Flip();
-            enemy.Flip();
+            transform.Translate(Vector2.left * moveSpeed * Time.deltaTime * (movingLeft ? 1 : -1));
+
+            bool groundDetected = Physics2D.Raycast(groundCheck.position, Vector2.down, checkDistance, groundLayer);
+            bool wallDetected = Physics2D.Raycast(wallCheck.position, Vector2.left * (movingLeft ? 1 : -1), checkDistance, groundLayer);
+
+            if (!groundDetected || wallDetected)
+            {
+                Flip();
+                enemy.Flip();
+            }
         }
     }
 

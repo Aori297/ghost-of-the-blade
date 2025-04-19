@@ -8,6 +8,9 @@ TagManager:
   - Hostile
   - Enemy
   - Projectile
+  - RangedEnemy
+  - Ronin
+  - Headless
   layers:
   - Default
   - TransparentFX

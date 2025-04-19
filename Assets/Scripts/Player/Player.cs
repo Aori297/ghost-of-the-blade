@@ -23,6 +23,7 @@ public class PlayerController : MonoBehaviour
     private bool dashEnabled;
     private bool canDoubleJump;
     private bool doubleJumpEnabled;
+    [SerializeField] private bool attackCooldown;
 
     public float jumpForce;
     public float dashRange;
@@ -206,24 +207,40 @@ public class PlayerController : MonoBehaviour
         Debug.Log("Player interacted");
     }
 
-    private void OnCollisionEnter2D(Collision2D collision)
-    {
-        Debug.Log("Collided with: " + collision.gameObject.name);
-    }
-
     public void Attack()
     {
-        Debug.Log("Attacking");
-        //isAttacking = false;
-        playerHealthStamina.DepleteStamina(playerHealthStamina.attackStamina);
-        anim.SetTrigger("Attack");
-
-        Collider2D collisionInfo = Physics2D.OverlapCircle(attackPoint.position, attackRadius);
-
-        if (collisionInfo != null && collisionInfo.gameObject.CompareTag("Enemy"))
+        if (!attackCooldown && !isBlocking)
         {
-            collisionInfo.gameObject.GetComponent<Enemy>().TakeDamage(10);
+            attackCooldown = true;
+            playerHealthStamina.DepleteStamina(playerHealthStamina.attackStamina);
+            anim.SetTrigger("Attack");
+            Debug.Log("Attacking");
+
+            Invoke("AttackOnCooldown", 1);
+
+            Collider2D collisionInfo = Physics2D.OverlapCircle(attackPoint.position, attackRadius);   
+            if (collisionInfo != null && collisionInfo.gameObject.CompareTag("Enemy"))
+            {
+                collisionInfo.gameObject.GetComponent<Enemy>().TakeDamage(20);
+            }
+            else if (collisionInfo != null && collisionInfo.gameObject.CompareTag("RangedEnemy"))
+            {
+                collisionInfo.gameObject.GetComponent<RangeEnemy>().TakeDamage(30);
+            }
+            else if (collisionInfo != null && collisionInfo.gameObject.CompareTag("Ronin"))
+            {
+                collisionInfo.gameObject.GetComponent<RoninScript>().TakeDamage(30);
+            }
+            else if (collisionInfo != null && collisionInfo.gameObject.CompareTag("Headless"))
+            {
+                collisionInfo.gameObject.GetComponent<HeadlessScript>().TakeDamage(30);
+            }
         }
+    }
+
+    void AttackOnCooldown()
+    {
+        attackCooldown = false;
     }
 
     private void OnTriggerEnter2D(Collider2D collision)
@@ -236,7 +253,7 @@ public class PlayerController : MonoBehaviour
 
     private void SetBlockingState(bool state)
     {
-        if (!isMoving)
+        if (!isMoving && !attackCooldown)
         {
             isBlocking = state;
             playerHealthStamina.isBlocking = state;

@@ -258,13 +258,12 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 5752265858650485399}
-  - component: {fileID: 1948476427883962114}
-  - component: {fileID: 2373334348910192278}
   - component: {fileID: 6360184292016581423}
   - component: {fileID: 2964447420700832861}
+  - component: {fileID: 3229151255882799090}
   m_Layer: 8
   m_Name: Ronin
-  m_TagString: Enemy
+  m_TagString: Ronin
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -285,56 +284,6 @@ Transform:
   - {fileID: 8837893305780791403}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &1948476427883962114
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 7168226938709959308}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 9c24584e8a5cb8c4585a219b4456149b, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  isPatrolling: 0
-  moveSpeed: 4
-  groundCheck: {fileID: 3090453291638637929}
-  wallCheck: {fileID: 4862022440164899514}
-  checkDistance: 0.65
-  groundLayer:
-    serializedVersion: 2
-    m_Bits: 64
-  enemy: {fileID: 2373334348910192278}
---- !u!114 &2373334348910192278
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 7168226938709959308}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: f696e7b95ec58dd448bc8093626e7d28, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  enemyHealth: 0
-  enemyMoveSpeed: 7
-  enemyAttackSpeed: 1
-  enemyAttackRange: 5
-  rayDistance: 4
-  followTickRate: 0.05
-  attackPoint: {fileID: 2740489244284512913}
-  checkPoint: {fileID: 8227691280642364345}
-  playerLayer:
-    serializedVersion: 2
-    m_Bits: 128
-  anim: {fileID: 6795062134151629840}
-  playerDetected: 0
-  patrolling: {fileID: 1948476427883962114}
-  playerEscaped:
-    m_PersistentCalls:
-      m_Calls: []
 --- !u!50 &6360184292016581423
 Rigidbody2D:
   serializedVersion: 4
@@ -394,7 +343,7 @@ BoxCollider2D:
   m_IsTrigger: 1
   m_UsedByEffector: 0
   m_UsedByComposite: 0
-  m_Offset: {x: 0.2649479, y: 0.18767166}
+  m_Offset: {x: 0.2649479, y: 0.19837761}
   m_SpriteTilingProperty:
     border: {x: 0, y: 0, z: 0, w: 0}
     pivot: {x: 0, y: 0}
@@ -405,8 +354,41 @@ BoxCollider2D:
     adaptiveTiling: 0
   m_AutoTiling: 0
   serializedVersion: 2
-  m_Size: {x: 6.2989388, y: 3.185814}
+  m_Size: {x: 6.2989388, y: 3.164402}
   m_EdgeRadius: 0
+--- !u!114 &3229151255882799090
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7168226938709959308}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1711df8ad87f9e54e8d10cd91879963f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  playerTransform: {fileID: 0}
+  detectionRange: 10
+  playerLayer:
+    serializedVersion: 2
+    m_Bits: 128
+  bossArenaCollider: {fileID: 0}
+  moveSpeed: 6
+  followDistance: 1.5
+  isFacingRight: 0
+  attackCooldown: 2
+  attackRange: 2
+  attackPoint: {fileID: 2740489244284512913}
+  attackRadius: 1.5
+  attackDamage: 20
+  animator: {fileID: 6795062134151629840}
+  rb: {fileID: 6360184292016581423}
+  playerInArena: 0
+  isAttacking: 0
+  isCoolingDown: 0
+  isDead: 0
+  maxHealth: 200
 --- !u!1 &8090597958102067798
 GameObject:
   m_ObjectHideFlags: 0
@@ -432,7 +414,7 @@ Transform:
   m_GameObject: {fileID: 8090597958102067798}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalPosition: {x: -2.16, y: 0.02, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []

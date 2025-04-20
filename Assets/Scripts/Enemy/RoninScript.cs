@@ -4,37 +4,30 @@ using UnityEngine.UI;
 
 public class RoninScript : MonoBehaviour
 {
-    [Header("Detection")]
-    [SerializeField] private Transform playerTransform;
-    [SerializeField] private float detectionRange = 10f;
-    [SerializeField] private LayerMask playerLayer;
     [SerializeField] private BoxCollider2D bossArenaCollider;
-    [SerializeField] Slider healthBar;
-
-    [Header("Movement")]
-    [SerializeField] private float moveSpeed = 3f;
-    [SerializeField] private float followDistance = 1.5f;
-    [SerializeField] private bool isFacingRight = true;
-
-    [Header("Attack")]
-    [SerializeField] private float attackCooldown = 2f;
-    [SerializeField] private float attackRange = 2f;
+    [SerializeField] private LayerMask playerLayer;
+    [SerializeField] private Transform playerTransform;
     [SerializeField] private Transform attackPoint;
-    [SerializeField] private float attackRadius = 1.5f;
-    [SerializeField] private int attackDamage = 20;
-
-    [Header("Components")]
     [SerializeField] private Animator animator;
     [SerializeField] private Rigidbody2D rb;
+    [SerializeField] Slider healthBar;
+
+    [SerializeField] private float detectionRange = 10f;
+    [SerializeField] private float moveSpeed = 3f;
+    [SerializeField] private float followDistance = 1.5f;
+    [SerializeField] private float maxHealth = 200;
+    [SerializeField] private float currentHealth;
+    [SerializeField] private int attackDamage = 20;
+    [SerializeField] private float attackCooldown = 2f;
+    [SerializeField] private float attackRange = 2f;
+    [SerializeField] private float attackRadius = 1.5f;
 
     [SerializeField] private bool playerInArena = false;
     [SerializeField] private bool isAttacking = false;
     [SerializeField] private bool isCoolingDown = false;
     [SerializeField] private bool isDead = false;
+    [SerializeField] private bool isFacingRight = true;
 
-    [Header("Health")]
-    [SerializeField] private int maxHealth = 200;
-    [SerializeField] private int currentHealth;
 
     private readonly string ANIM_IDLE = "Ronin_Idle";
     private readonly string ANIM_WALK = "Follow";
@@ -91,11 +84,9 @@ public class RoninScript : MonoBehaviour
         animator.SetBool(ANIM_WALK, true);
 
         healthBar.gameObject.SetActive(true);
-        // Optional: Play boss music
+
         // AudioManager.Instance.PlayBossMusic();
 
-        // Optional: Lock the arena doors
-        // ArenaManager.Instance.LockDoors();
     }
 
     private void HandleBossAI()
@@ -105,25 +96,20 @@ public class RoninScript : MonoBehaviour
 
         float distanceToPlayer = Vector2.Distance(transform.position, playerTransform.position);
 
-        // Check if close enough to attack
         if (distanceToPlayer <= attackRange)
         {
-            // Stop movement and go to idle animation first
             rb.velocity = Vector2.zero;
             animator.SetBool(ANIM_WALK, false);
             animator.SetBool(ANIM_IDLE, true);
 
-            // Start attack if not already attacking or cooling down
             if (!isAttacking && !isCoolingDown)
             {
                 StartCoroutine(DelayedAttack());
-                // Set cooling down to prevent starting multiple attack coroutines
                 isCoolingDown = true;
             }
         }
         else
         {
-
             MoveTowardsPlayer();
         }
     }
@@ -184,7 +170,6 @@ public class RoninScript : MonoBehaviour
                 break;
         }
 
-        // Wait for animation to reach the damage frame
         yield return new WaitForSeconds(0.3f);
 
         Collider2D[] hitPlayers = Physics2D.OverlapCircleAll(attackPoint.position, attackRadius, playerLayer);
@@ -198,7 +183,6 @@ public class RoninScript : MonoBehaviour
             }
         }
 
-        // Wait for the animation to finish
         yield return new WaitForSeconds(0.7f);
 
         isAttacking = false;
@@ -240,19 +224,6 @@ public class RoninScript : MonoBehaviour
 
         animator.SetTrigger(ANIM_DEATH);
         healthBar.gameObject.SetActive(false);
-
-
-        // Optional: Drop items or unlock abilities
-        // LootManager.Instance.DropLoot(transform.position);
-
-        // Optional: Unlock doors or transition to next area
-        // ArenaManager.Instance.BossDefeated();
-
-        // Optional: Stop boss music, play victory music
-        // AudioManager.Instance.PlayVictoryMusic();
-
-        // Destroy the boss after the animation plays
-        // Animation event could call this, or we could use a coroutine
         Destroy(gameObject, 3f);
     }
 

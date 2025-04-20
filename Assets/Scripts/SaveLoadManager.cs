@@ -1,4 +1,6 @@
+using System;
 using System.IO;
+using System.Collections;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
@@ -11,11 +13,10 @@ public class GameManager : MonoBehaviour
 
     private void Awake()
     {
-        // Singleton pattern
         if (Instance == null)
         {
             Instance = this;
-            DontDestroyOnLoad(gameObject);
+            //DontDestroyOnLoad(gameObject);
         }
         else
         {
@@ -23,22 +24,18 @@ public class GameManager : MonoBehaviour
             return;
         }
 
-        // Set save path
         savePath = Application.persistentDataPath + "/savegame.json";
 
-        // Subscribe to scene loaded event
         SceneManager.sceneLoaded += OnSceneLoaded;
     }
 
     private void OnDestroy()
     {
-        // Unsubscribe from event to prevent memory leaks
         SceneManager.sceneLoaded -= OnSceneLoaded;
     }
 
     private void OnSceneLoaded(Scene scene, LoadSceneMode mode)
     {
-        // Find player in every scene transition
         FindPlayer();
     }
 
@@ -46,6 +43,29 @@ public class GameManager : MonoBehaviour
     {
         FindPlayer();
         gameData = PlayerGameData.Instance;
+
+        StartCoroutine(CheckForLoadRequest());
+    }
+
+    private IEnumerator CheckForLoadRequest()
+    {
+        yield return new WaitForSeconds(0.2f);
+
+        if (SceneLoader.Instance != null && SceneLoader.Instance.shouldLoadSavedGame)
+        {
+            int attempts = 0;
+            while (player == null && attempts < 10)
+            {
+                FindPlayer();
+                if (player == null)
+                {
+                    yield return new WaitForSeconds(0.1f);
+                    attempts++;
+                }
+            }
+
+            LoadData();
+        }
     }
 
     private void Update()
@@ -62,20 +82,15 @@ public class GameManager : MonoBehaviour
 
     private void FindPlayer()
     {
-        // Multiple methods to find player
         player = FindAnyObjectByType<PlayerController>();
-
         if (player == null)
         {
-            // Try finding inactive objects or by tag
             player = FindObjectOfType<PlayerController>(true);
         }
-
         if (player == null)
         {
             player = GameObject.FindGameObjectWithTag("Player")?.GetComponent<PlayerController>();
         }
-
         if (player != null)
         {
             Debug.Log($"Player found in scene: {SceneManager.GetActiveScene().name}");
@@ -88,19 +103,16 @@ public class GameManager : MonoBehaviour
 
     public void SaveData()
     {
-        FindPlayer(); // Ensure we have the latest player reference
-
+        FindPlayer(); 
         if (player != null)
         {
             PlayerSaveData data = new PlayerSaveData(player);
             string json = JsonUtility.ToJson(data, true);
             File.WriteAllText(savePath, json);
-
             if (gameData != null)
             {
                 gameData.SyncDataFromPlayer();
             }
-
             Debug.Log("Game Saved!");
         }
         else
@@ -116,19 +128,13 @@ public class GameManager : MonoBehaviour
             string json = File.ReadAllText(savePath);
             PlayerSaveData data = JsonUtility.FromJson<PlayerSaveData>(json);
 
-            // Find player before loading data
             FindPlayer();
-
             if (player != null)
-            {
-                // Apply loaded data to player
-                player.transform.position = new Vector3(data.Xpos, data.Ypos);
-
+            {player.transform.position = new Vector3(data.Xpos, data.Ypos);
                 if (gameData != null)
                 {
                     gameData.SyncDataFromPlayer();
                 }
-
                 Debug.Log("Game Loaded!");
             }
             else

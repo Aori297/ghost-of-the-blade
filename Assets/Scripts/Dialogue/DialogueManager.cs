@@ -18,9 +18,17 @@ public class DialogueManager : MonoBehaviour
     [SerializeField] private TextMeshProUGUI[] choiceOptions;
     [SerializeField] private TextMeshProUGUI npcName;
     [SerializeField] private Image avatarImage;
-    [SerializeField] private float textSpeed = 0.05f;
 
+    private bool isTyping = false;
+    private bool makeChoice = false;
+
+    [SerializeField] private float textSpeed = 0.05f;
     [SerializeField] private float inputCooldown = 0.1f;
+    private float lastInputTime;
+    private int currentLineIndex = 0;
+    private int selectedChoice = 0;
+    private int lastSelectedChoice = -1;
+    private int currentBranchIndex;
 
     private GameInput gameInput;
 
@@ -28,21 +36,13 @@ public class DialogueManager : MonoBehaviour
 
     private string[] lines;
     private string[] choices;
-    private int currentLineIndex = 0;
     private Coroutine typingCoroutine;
-    private bool isTyping = false;
-    private bool makeChoice = false;
-    private int selectedChoice = 0;
-    private int lastSelectedChoice = -1;
-    private float lastInputTime;
 
     private InputAction submitAction;
     private InputAction navigateAction;
 
     private DialogueData currentDialogueData;
-    private int currentBranchIndex;
     private DialogueData.DialogueBranch currentBranch;
-
     private Dictionary<string, bool> dialogueOutcomes = new Dictionary<string, bool>();
 
     public event Action OnDialogueEnd;
@@ -129,7 +129,7 @@ public class DialogueManager : MonoBehaviour
             ShowChoice();
             return;
         }
-
+        OnDialogueEnd?.Invoke();
         EndDialogue();
     }
 
@@ -297,7 +297,6 @@ public class DialogueManager : MonoBehaviour
 
     public void EndDialogue()
     {
-        OnDialogueEnd?.Invoke();
         ResetDialogueState();
         TogglePlayerMovement(true);
     }

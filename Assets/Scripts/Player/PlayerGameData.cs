@@ -11,7 +11,6 @@ public class PlayerGameData : MonoBehaviour
 
     private void Awake()
     {
-        // Singleton pattern with null check
         if (Instance == null)
         {
             Instance = this;
@@ -25,17 +24,6 @@ public class PlayerGameData : MonoBehaviour
 
         FindPlayer();
 
-    }
-
-
-
-    private void Update()
-    {
-        // Optional: Debugging key to find player
-        if (Input.GetKeyDown(KeyCode.B))
-        {
-            FindPlayer();
-        }
     }
 
     public void SyncDataToPlayer()
@@ -61,7 +49,7 @@ public class PlayerGameData : MonoBehaviour
     public void FindPlayer()
     {
         Scene currentScene = SceneManager.GetActiveScene();
-        player = FindObjectOfType<PlayerController>(true); // true includes inactive objects
+        player = FindObjectOfType<PlayerController>(true);
 
         if (player != null)
         {

@@ -13,14 +13,12 @@ public class GameInput : MonoBehaviour
 
     private void Awake()
     {
-        // Singleton pattern to ensure only one instance of GameInput exists
         if (Instance == null) Instance = this;
         else Destroy(gameObject);
 
         inputActions = new PlayerInputs();
         inputActions.Enable();
 
-        // Get Actions from PlayerInputs
         move = inputActions.PlayerInput.Movement;
         //interact = inputActions.PlayerInput.Interact;
 

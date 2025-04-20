@@ -14,6 +14,8 @@ public class PlayerController : MonoBehaviour
     [SerializeField] private LayerMask groundLayer;
     [SerializeField] private Animator anim;
     [SerializeField] private Transform attackPoint;
+    private Rigidbody2D rb;
+
 
     private bool isBlocking;
     private bool isJumping;
@@ -29,11 +31,10 @@ public class PlayerController : MonoBehaviour
     public float dashRange;
     public float attackRadius;
 
+
     private PlayerHealthStamina playerHealthStamina;
     private GameInput gameInput;
     [SerializeField] private float moveSpeed;
-
-    private Rigidbody2D rb;
 
     private void Awake()
     {
@@ -45,7 +46,7 @@ public class PlayerController : MonoBehaviour
         rb = GetComponent<Rigidbody2D>();
         if (rb == null)
         {
-            Debug.LogError("Rigidbody2D is missing on GameObject. Please add it.");
+            Debug.LogError("rb missing");
             return;
         }
 
@@ -54,13 +55,11 @@ public class PlayerController : MonoBehaviour
 
     private void Start()
     {
-
         if (playerHealthStamina == null)
         {
             playerHealthStamina = PlayerHealthStamina.Instance;
             if (playerHealthStamina == null)
             {
-                Debug.LogError("playerHealthStamina script not found in the scene!");
                 return;
             }
         }
@@ -70,7 +69,6 @@ public class PlayerController : MonoBehaviour
             gameInput = GameInput.Instance;
             if (gameInput == null)
             {
-                Debug.LogError("GameInput script not found in the scene!");
                 return;
             }
         }

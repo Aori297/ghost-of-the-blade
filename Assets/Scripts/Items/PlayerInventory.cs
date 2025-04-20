@@ -28,7 +28,7 @@ public class PlayerInventory : MonoBehaviour
     {
         if (keyItemQueue.Count == 0)
         {
-            Debug.Log("No Key left!");
+            Debug.Log("No Key left");
             return;
         }
 

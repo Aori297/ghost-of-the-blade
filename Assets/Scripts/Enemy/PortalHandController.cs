@@ -3,8 +3,8 @@ using UnityEngine;
 
 public class PortalHandController : MonoBehaviour
 {
-    [SerializeField] private float damageDelay = 0.7f; // Time until damage is applied after spawning
-    [SerializeField] private float lifespan = 1.5f;    // Total time before destroying the object
+    [SerializeField] private float damageDelay = 0.7f; 
+    [SerializeField] private float lifespan = 1.5f;  
     [SerializeField] private float attackRadius = 1.5f;
     [SerializeField] private Transform attackPoint;
     [SerializeField] private int damageAmount = 15;
@@ -21,13 +21,10 @@ public class PortalHandController : MonoBehaviour
         if (attackPoint == null)
             attackPoint = transform;
 
-        // Play the single animation that contains spawn, attack, and disappear
         animator.Play("Ranged_Attack");
 
-        // Schedule damage application
         Invoke("DealDamage", damageDelay);
 
-        // Schedule object destruction
         Destroy(gameObject, lifespan);
     }
 

@@ -84,9 +84,6 @@ public class RoninScript : MonoBehaviour
         animator.SetBool(ANIM_WALK, true);
 
         healthBar.gameObject.SetActive(true);
-
-        // AudioManager.Instance.PlayBossMusic();
-
     }
 
     private void HandleBossAI()

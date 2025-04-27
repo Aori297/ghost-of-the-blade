@@ -8,6 +8,7 @@ public class UIManager : MonoBehaviour
     private musicManager mM;
 
     [SerializeField] private GameObject pausePanel;
+    [SerializeField] private GameObject savePanel;
     [SerializeField] private GameObject settingsPanel;
     [SerializeField] private bool isPaused;
 
@@ -88,6 +89,16 @@ public class UIManager : MonoBehaviour
         pausePanel.SetActive(true);
     }
 
+    public void SavePanel()
+    {
+        //mM.PlayOnceClip("buttonClick");
+        Time.timeScale = 0f;
+
+        isPaused = true;
+
+        savePanel.SetActive(true);
+    }
+
     public void Resume()
     {
         //mM.PlayOnceClip("buttonClick");
@@ -96,6 +107,7 @@ public class UIManager : MonoBehaviour
         isPaused = false;
 
         pausePanel.SetActive(false);
+        savePanel.SetActive(false);
     }
 
     public void OpenSettings()

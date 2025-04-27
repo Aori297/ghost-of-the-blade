@@ -6,6 +6,7 @@ using UnityEngine.SceneManagement;
 
 public class GameManager : MonoBehaviour
 {
+    [SerializeField] GameObject deathScreen;
     public static GameManager Instance { get; private set; }
     private PlayerGameData gameData;
     private PlayerController player;
@@ -116,6 +117,12 @@ public class GameManager : MonoBehaviour
         }
     }
 
+    public void DieRespawn()
+    {
+        deathScreen.SetActive(false);
+        LoadData();
+    }
+
     public void LoadData()
     {
         if (File.Exists(savePath))
@@ -125,7 +132,10 @@ public class GameManager : MonoBehaviour
 
             FindPlayer();
             if (player != null)
-            {player.transform.position = new Vector3(data.Xpos, data.Ypos);
+            {
+                player.transform.position = new Vector3(data.Xpos, data.Ypos);
+                player.dashEnabled = data.dashEnabled;
+                player.doubleJumpEnabled = data.doubleJumpEnabled;
                 if (gameData != null)
                 {
                     gameData.SyncDataFromPlayer();

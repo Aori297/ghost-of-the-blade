@@ -93,7 +93,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f696e7b95ec58dd448bc8093626e7d28, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  enemyHealth: 0
+  enemyHealth: 100
   enemyMoveSpeed: 7
   enemyAttackSpeed: 2
   enemyAttackRange: 2.2
@@ -105,8 +105,12 @@ MonoBehaviour:
     serializedVersion: 2
     m_Bits: 128
   anim: {fileID: 6986036620349479691}
+  isHurt: 0
+  isDead: 0
   playerDetected: 0
   patrolling: {fileID: 4600287804717460516}
+  waitSeconds: 0.7
+  enemyDamage: 4
   playerEscaped:
     m_PersistentCalls:
       m_Calls: []
@@ -157,7 +161,7 @@ Rigidbody2D:
   m_Interpolate: 0
   m_SleepingMode: 1
   m_CollisionDetection: 0
-  m_Constraints: 6
+  m_Constraints: 4
 --- !u!1 &3184583477128748536
 GameObject:
   m_ObjectHideFlags: 0
@@ -332,7 +336,7 @@ BoxCollider2D:
   m_IsTrigger: 0
   m_UsedByEffector: 0
   m_UsedByComposite: 0
-  m_Offset: {x: 0.029911041, y: 1.2780069}
+  m_Offset: {x: 0.029911041, y: 1.3074327}
   m_SpriteTilingProperty:
     border: {x: 0, y: 0, z: 0, w: 0}
     pivot: {x: 0.5, y: 0}
@@ -343,7 +347,7 @@ BoxCollider2D:
     adaptiveTiling: 0
   m_AutoTiling: 0
   serializedVersion: 2
-  m_Size: {x: 1.084938, y: 2.4348137}
+  m_Size: {x: 1.084938, y: 2.3759623}
   m_EdgeRadius: 0
 --- !u!1 &4750347123312571346
 GameObject:

@@ -1,11 +1,15 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
+using UnityEngine.SceneManagement;
+using UnityEngine.EventSystems;
 
 public class CheckpointScript : MonoBehaviour
 {
     [SerializeField] private BoxCollider2D checkpoint;
     [SerializeField] private GameManager gameManager;
+    [SerializeField] private GameObject savePanel;
     [SerializeField] private Transform playerTransform;
 
     private void Start()
@@ -26,8 +30,14 @@ public class CheckpointScript : MonoBehaviour
         {
             if (Input.GetKeyDown(KeyCode.E))
             {
-                gameManager.SaveData();
+                savePanel.SetActive(true);
             }
         }
+    }
+
+    public void SaveGameData()
+    {
+        gameManager.SaveData();
+        savePanel.SetActive(false);
     }
 }

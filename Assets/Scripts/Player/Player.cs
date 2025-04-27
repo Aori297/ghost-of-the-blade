@@ -4,27 +4,33 @@ using UnityEngine.SceneManagement;
 using UnityEngine.Windows;
 using System.Collections;
 using System;
+using UnityEditor.Build;
 
 public class PlayerController : MonoBehaviour
 {
     public static PlayerController Instance;
+
+    [SerializeField] GameObject deathScreen;
+    [SerializeField] GameObject doubleJump;
+    [SerializeField] GameObject dash;
 
     [SerializeField] private Transform groundChecker;
     [SerializeField] private float groundCheckDistance;
     [SerializeField] private LayerMask groundLayer;
     [SerializeField] private Animator anim;
     [SerializeField] private Transform attackPoint;
+
     private Rigidbody2D rb;
 
-
+    public bool isDead;
     private bool isBlocking;
     private bool isJumping;
     private bool isMoving;
     private bool isGrounded;
     private bool isDashing;
-    private bool dashEnabled;
+    public bool dashEnabled;
     private bool canDoubleJump;
-    private bool doubleJumpEnabled;
+    public bool doubleJumpEnabled;
     [SerializeField] private bool attackCooldown;
 
     public float jumpForce;
@@ -73,6 +79,8 @@ public class PlayerController : MonoBehaviour
             }
         }
 
+        Invoke("CheckAbility", 2f);
+
         gameInput.inputActions.PlayerInput.Interact.performed += _ => Interact();
         gameInput.inputActions.PlayerInput.Jump.performed += _ => AttemptJump();
         gameInput.inputActions.PlayerInput.Dash.performed += _ => Dash();
@@ -82,16 +90,38 @@ public class PlayerController : MonoBehaviour
 
     }
 
+    private void CheckAbility()
+    {
+        if (dashEnabled == true)
+        {
+            dash.SetActive(true);
+        }
+        else
+        {
+            dash.SetActive(false);
+        }
+        if (doubleJumpEnabled == true)
+        {
+            doubleJump.SetActive(true);
+        }
+        else
+        {
+            doubleJump.SetActive(false);
+        }
+    }
+
     public void OnAbilityUnlock(int id)
     {
         switch (id)
         {
             case 0:
                 dashEnabled = true;
+                dash.SetActive(true);
                 break;
 
             case 1:
                 doubleJumpEnabled = true;
+                doubleJump.SetActive(true);
                 break;
         }
     }
@@ -99,13 +129,15 @@ public class PlayerController : MonoBehaviour
     private void FixedUpdate()
     {
         HandleMovement();
+        Death();
     }
+
 
     private void HandleMovement()
     {
         Vector3 input = gameInput.GetMovementVector();
 
-        if (input.magnitude > 0.01f && !isBlocking)
+        if (input.magnitude > 0.01f && !isBlocking && !isDead)
         {
             isMoving = true;
 
@@ -134,7 +166,7 @@ public class PlayerController : MonoBehaviour
     {
         isGrounded = IsGrounded();
 
-        if (isGrounded && !isBlocking)
+        if (isGrounded && !isBlocking && !isDead)
         {
             canDoubleJump = true;
             Jump();
@@ -154,7 +186,7 @@ public class PlayerController : MonoBehaviour
 
     public void Dash()
     {
-        if (dashEnabled && IsGrounded())
+        if (dashEnabled && IsGrounded() && !isDead)
         {
             if (playerHealthStamina.currentStamina >= 5)
             {
@@ -207,7 +239,7 @@ public class PlayerController : MonoBehaviour
 
     public void Attack()
     {
-        if (!attackCooldown && !isBlocking)
+        if (!attackCooldown && !isBlocking && !isDead)
         {
             attackCooldown = true;
             playerHealthStamina.DepleteStamina(playerHealthStamina.attackStamina);
@@ -251,12 +283,38 @@ public class PlayerController : MonoBehaviour
 
     private void SetBlockingState(bool state)
     {
-        if (!isMoving && !attackCooldown)
+        if (!isMoving && !attackCooldown && !isDead)
         {
             isBlocking = state;
             playerHealthStamina.isBlocking = state;
             anim.SetBool("Block", state);
-            Debug.Log(state ? "Blocking" : "Not Blocking");
         }
+    }
+
+    public void Death()
+    {
+       if (isDead) return;     
+
+       if(playerHealthStamina.currentHealth <= 0 && !isDead)
+        {
+            isDead = true;
+
+            gameInput.inputActions.PlayerInput.Disable();
+
+            isDashing = false;
+            canDoubleJump = false;
+
+            anim.SetTrigger("Death");
+
+            StartCoroutine(ShowDeathScreenAfterDelay(2f));
+ 
+        }
+    }
+
+    private IEnumerator ShowDeathScreenAfterDelay(float delay)
+    {
+        yield return new WaitForSeconds(delay);
+        transform.position = new Vector2(-152f, -69f);
+        deathScreen.SetActive(true);
     }
 }

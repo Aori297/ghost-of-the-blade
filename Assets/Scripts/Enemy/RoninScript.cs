@@ -28,8 +28,6 @@ public class RoninScript : MonoBehaviour
     [SerializeField] private bool isDead = false;
     [SerializeField] private bool isFacingRight = true;
 
-
-    private readonly string ANIM_IDLE = "Ronin_Idle";
     private readonly string ANIM_WALK = "Follow";
     private readonly string ANIM_ATTACK1 = "Attack 1";
     private readonly string ANIM_ATTACK2 = "Attack 2";
@@ -97,7 +95,6 @@ public class RoninScript : MonoBehaviour
         {
             rb.velocity = Vector2.zero;
             animator.SetBool(ANIM_WALK, false);
-            animator.SetBool(ANIM_IDLE, true);
 
             if (!isAttacking && !isCoolingDown)
             {
@@ -140,13 +137,11 @@ public class RoninScript : MonoBehaviour
             Vector2 movementVector = new Vector2(Mathf.Sign(directionX) * moveSpeed, 0);
             rb.velocity = movementVector;
             animator.SetBool(ANIM_WALK, true);
-            animator.SetBool(ANIM_IDLE, false);
         }
         else
         {
             rb.velocity = Vector2.zero;
             animator.SetBool(ANIM_WALK, false);
-            animator.SetBool(ANIM_IDLE, true);
         }
     }
 

@@ -1,5 +1,6 @@
 using System.Collections;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class HeadlessScript : MonoBehaviour
 {
@@ -8,6 +9,7 @@ public class HeadlessScript : MonoBehaviour
     [SerializeField] private LayerMask playerLayer;
     [SerializeField] private BoxCollider2D bossArenaCollider;
     [SerializeField] private GameObject portalHandPrefab;
+    [SerializeField] private Slider healthBar;
 
     [SerializeField] private float detectionRange = 15f;
     [SerializeField] private float rangedAttackRange = 12f;
@@ -83,10 +85,14 @@ public class HeadlessScript : MonoBehaviour
             HandleBossAI();
         }
     }
-
+    void UpdateUI()
+    {
+        healthBar.value = currentHealth;
+    }
     private void ActivateBoss()
     {
         playerInArena = true;
+        healthBar.gameObject.SetActive(true);
     }
 
     private void HandleBossAI()
@@ -262,6 +268,8 @@ public class HeadlessScript : MonoBehaviour
 
         rb.velocity = Vector2.zero;
         rb.isKinematic = true;
+        healthBar.gameObject.SetActive(false);
+
 
         animator.SetTrigger(ANIM_DEATH);
 

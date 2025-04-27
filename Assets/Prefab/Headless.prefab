@@ -48,25 +48,29 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   playerTransform: {fileID: 0}
-  detectionRange: 15
+  attackPoint: {fileID: 4826801768854606036}
   playerLayer:
     serializedVersion: 2
     m_Bits: 128
   bossArenaCollider: {fileID: 0}
-  moveSpeed: 2.5
-  followDistance: 1.5
-  isFacingRight: 1
-  attackCooldown: 2.5
-  attackPoint: {fileID: 4826801768854606036}
-  meleeAttackRange: 3
-  meleeAttackRadius: 2
-  meleeAttackDamage: 25
-  rangedAttackRange: 12
   portalHandPrefab: {fileID: 7337604160491947665, guid: a6eb7771122a3a745874b17c7670bc16, type: 3}
+  detectionRange: 12
+  rangedAttackRange: 10
+  attackCooldown: 2.5
+  followDistance: 1.5
+  moveSpeed: 2.5
+  meleeAttackRange: 6
+  meleeAttackRadius: 1
+  meleeAttackDamage: 25
   portalAttackDelay: 1
   rangedAttackDamage: 15
   animator: {fileID: 7302964587863980463}
   rb: {fileID: 1655988275911415566}
+  playerInArena: 0
+  isAttacking: 0
+  isCoolingDown: 0
+  isDead: 0
+  isFacingRight: 0
   maxHealth: 200
 --- !u!50 &1655988275911415566
 Rigidbody2D:
@@ -94,7 +98,7 @@ Rigidbody2D:
   m_Interpolate: 0
   m_SleepingMode: 1
   m_CollisionDetection: 0
-  m_Constraints: 0
+  m_Constraints: 4
 --- !u!61 &9199378713549223692
 BoxCollider2D:
   m_ObjectHideFlags: 0

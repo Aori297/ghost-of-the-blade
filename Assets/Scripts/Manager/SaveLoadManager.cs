@@ -16,7 +16,6 @@ public class GameManager : MonoBehaviour
         if (Instance == null)
         {
             Instance = this;
-            //DontDestroyOnLoad(gameObject);
         }
         else
         {
@@ -115,10 +114,6 @@ public class GameManager : MonoBehaviour
             }
             Debug.Log("Game Saved!");
         }
-        else
-        {
-            Debug.LogWarning("Cannot save: Player not found!");
-        }
     }
 
     public void LoadData()
@@ -136,10 +131,6 @@ public class GameManager : MonoBehaviour
                     gameData.SyncDataFromPlayer();
                 }
                 Debug.Log("Game Loaded!");
-            }
-            else
-            {
-                Debug.LogWarning("Cannot load: Player not found!");
             }
         }
         else

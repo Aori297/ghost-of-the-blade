@@ -12,7 +12,6 @@ public class PlayerHealthStamina : MonoBehaviour
 
     public float MaxHealth = 100f;
     public float currentHealth;
-    public TextMeshProUGUI health;
     public event Action OnHealthUpdate;
 
     public Slider healthSlider;
@@ -21,7 +20,6 @@ public class PlayerHealthStamina : MonoBehaviour
     [SerializeField] private float MaxStamina = 100f;
     [SerializeField] private float StaminaRegenRate = 6f;
     [SerializeField] private float HealthRegenRate = 3f;
-    public TextMeshProUGUI stamina;
     public float currentStamina;
     public float attackStamina = 2f;
     public float dashStamina = 5f;
@@ -38,9 +36,8 @@ public class PlayerHealthStamina : MonoBehaviour
     void Start()
     {
         OnHealthUpdate += UpdateUI;
-        currentStamina = 0;
-        InvokeRepeating("RegenStamina", 0f, 1.0f);
-        InvokeRepeating("RegenHealth", 0f, 2.0f);
+        InvokeRepeating("RegenStamina", 0f, 2.0f);
+        InvokeRepeating("RegenHealth", 0f, 3.0f);
     }
 
     void RegenHealth()
@@ -78,12 +75,12 @@ public class PlayerHealthStamina : MonoBehaviour
         staminaSlider.value = currentStamina;
     }
 
-    public int damageAmount;
+    public int enemyDamageAmount = 10;
     public void TakeDamage(int amount, float waitSeconds)
     {
         if (!isBlocking)
         {
-            damageAmount = amount;
+            enemyDamageAmount = amount;
             StartCoroutine(DamageDetection(waitSeconds));
           
         }
@@ -93,7 +90,7 @@ public class PlayerHealthStamina : MonoBehaviour
     {
         yield return new WaitForSeconds(waitSeconds);
 
-        currentHealth = Mathf.Min(currentHealth - damageAmount, MaxHealth);
+        currentHealth = Mathf.Min(currentHealth - enemyDamageAmount, MaxHealth);
         OnHealthUpdate?.Invoke();
 
         float duration = 1f;
@@ -116,7 +113,7 @@ public class PlayerHealthStamina : MonoBehaviour
     {
         if (collision.gameObject.CompareTag("Projectile"))
         {
-            TakeDamage(25, 0);
+            TakeDamage(enemyDamageAmount, 0);
             Destroy(collision.gameObject);
 
         }

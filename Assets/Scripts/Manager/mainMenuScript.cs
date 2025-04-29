@@ -15,6 +15,8 @@ public class mainMenuScript : MonoBehaviour
     [SerializeField] private GameObject audioPanel;
     [SerializeField] private GameObject creditsPanel;
     [SerializeField] private GameObject quitPanel;
+    [SerializeField] public GameObject noSavePanel;
+
 
 
     [SerializeField] private Slider musicSldier;
@@ -104,6 +106,7 @@ public class mainMenuScript : MonoBehaviour
         }
         else
         {
+            noSavePanel.SetActive(true);
             mainButtons.SetActive(false);
         }
     }
@@ -121,6 +124,7 @@ public class mainMenuScript : MonoBehaviour
 
     public void NoNewGame()
     {
+        noSavePanel.SetActive(false);
         newGamePanel.SetActive(false);
         mainButtons.SetActive(true);
     }

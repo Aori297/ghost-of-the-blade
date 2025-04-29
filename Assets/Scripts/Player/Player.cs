@@ -4,7 +4,6 @@ using UnityEngine.SceneManagement;
 using UnityEngine.Windows;
 using System.Collections;
 using System;
-using UnityEditor.Build;
 
 public class PlayerController : MonoBehaviour
 {
@@ -191,6 +190,7 @@ public class PlayerController : MonoBehaviour
             if (playerHealthStamina.currentStamina >= 5)
             {
                 StartCoroutine(DashEngage());
+                Debug.Log("Dash");
             }
             else
             {
@@ -259,13 +259,20 @@ public class PlayerController : MonoBehaviour
             }
             else if (collisionInfo != null && collisionInfo.gameObject.CompareTag("Ronin"))
             {
-                collisionInfo.gameObject.GetComponent<RoninScript>().TakeDamage(30);
+                collisionInfo.gameObject.GetComponent<RoninScript>().TakeDamage(15);
             }
             else if (collisionInfo != null && collisionInfo.gameObject.CompareTag("Headless"))
             {
-                collisionInfo.gameObject.GetComponent<HeadlessScript>().TakeDamage(30);
+                collisionInfo.gameObject.GetComponent<HeadlessScript>().TakeDamage(15);
             }
         }
+    }
+
+    private void OnDrawGizmosSelected()
+    {
+        if (attackPoint == null) return;
+        Gizmos.color = Color.red;
+        Gizmos.DrawWireSphere(attackPoint.position, attackRadius);
     }
 
     void AttackOnCooldown()

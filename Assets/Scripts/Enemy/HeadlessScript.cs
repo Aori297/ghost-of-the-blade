@@ -225,9 +225,6 @@ public class HeadlessScript : MonoBehaviour
             playerTransform.position.y + .7f,
             playerTransform.position.z
         );
-
-
-        Debug.Log("Spawn gar");
         Instantiate(portalHandPrefab, targetPosition, Quaternion.identity);
 
         yield return new WaitForSeconds(0.6f);

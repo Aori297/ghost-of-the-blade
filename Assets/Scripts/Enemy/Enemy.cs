@@ -35,10 +35,10 @@ public class Enemy : MonoBehaviour
 
     private void Update()
     {
-        DetectPlayerWithRaycast();
+        DetectPlayer();
     }
 
-    private void DetectPlayerWithRaycast()
+    private void DetectPlayer()
     {
         if (checkPoint == null) return;
 
@@ -56,8 +56,7 @@ public class Enemy : MonoBehaviour
 
                 if (followCoroutine == null)
                     followCoroutine = StartCoroutine(FollowPlayerCoroutine());
-
-
+                Debug.Log("Player Detected");
             }
         }
         else

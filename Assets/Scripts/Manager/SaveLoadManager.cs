@@ -8,6 +8,7 @@ public class GameManager : MonoBehaviour
 {
     [SerializeField] GameObject deathScreen;
     public static GameManager Instance { get; private set; }
+
     private PlayerGameData gameData;
     private PlayerController player;
     private string savePath;
@@ -27,6 +28,7 @@ public class GameManager : MonoBehaviour
         savePath = Application.persistentDataPath + "/savegame.json";
 
         SceneManager.sceneLoaded += OnSceneLoaded;
+
     }
 
     private void OnDestroy()

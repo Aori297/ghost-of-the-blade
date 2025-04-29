@@ -1,0 +1,51 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 636b5ad57b185f74a91fd16d3f5bdc20, type: 3}
+  m_Name: Dash
+  m_EditorClassIdentifier: 
+  dialogueBranches:
+  - dialogueLines:
+    - Whoa! You actually found me? I thought I'd have at least another hour of peace.
+    choices:
+    - choiceText: Are you hiding?
+      nextBranchIndex: 1
+      hasOutcome: 0
+      outcomeKey: 
+    choiceCheck: 0
+    triggerBattle: 0
+    npcImage: {fileID: 21300000, guid: 9d108d67fe9d94e499620401b3618144, type: 3}
+    npcName: Ruri
+  - dialogueLines:
+    - Maybe. Maybe I'm just... strategically resting.
+    - Anyway! Since you tracked me down like a bloodhound... here!
+    choices:
+    - choiceText: What's this?
+      nextBranchIndex: 0
+      hasOutcome: 0
+      outcomeKey: 
+    choiceCheck: 0
+    triggerBattle: 0
+    npcImage: {fileID: 21300000, guid: 9d108d67fe9d94e499620401b3618144, type: 3}
+    npcName: Ruri
+  - dialogueLines:
+    - Maybe. Maybe I'm just... strategically resting.
+    - Anyway! Since you tracked me down like a bloodhound... here!
+    choices:
+    - choiceText: What's this?
+      nextBranchIndex: 3
+      hasOutcome: 0
+      outcomeKey: Dash
+    choiceCheck: 0
+    triggerBattle: 0
+    npcImage: {fileID: 21300000, guid: 9d108d67fe9d94e499620401b3618144, type: 3}
+    npcName: Ruri
+  startingBranchIndex: 0

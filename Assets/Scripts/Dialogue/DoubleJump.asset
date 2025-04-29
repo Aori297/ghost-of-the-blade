@@ -1,0 +1,40 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 636b5ad57b185f74a91fd16d3f5bdc20, type: 3}
+  m_Name: DoubleJump
+  m_EditorClassIdentifier: 
+  dialogueBranches:
+  - dialogueLines:
+    - "Ahhh, finally a Monolith. No arrows, no bandits, just you, me, and this big
+      ol\u2019 rock."
+    - "Go ahead\u2014touch it. It\u2019ll save your progress\u2026 "
+    - "if you die...which, let\u2019s be honest, you might"
+    - "You\u2019ll respawn right here. Neat, huh?"
+    - "Alright. Time for a little upgrade\u2026"
+    choices:
+    - choiceText: Hmm?
+      nextBranchIndex: 1
+      hasOutcome: 1
+      outcomeKey: DoubleJump
+    choiceCheck: 1
+    triggerBattle: 0
+    npcImage: {fileID: 21300000, guid: 9d108d67fe9d94e499620401b3618144, type: 3}
+    npcName: '?'
+  - dialogueLines:
+    - 'Jump, then hit [Space] again mid-air. '
+    - You should feel a little lighter than before.
+    choices: []
+    choiceCheck: 0
+    triggerBattle: 0
+    npcImage: {fileID: 21300000, guid: 9d108d67fe9d94e499620401b3618144, type: 3}
+    npcName: '?'
+  startingBranchIndex: 0
